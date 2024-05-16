@@ -1,0 +1,19 @@
+{
+  "name": "reddit2",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "watch": "tsc -w",
+    "dev": "nodemon dist/index.js",
+    "start": "node dist/index.js"
+  },
+  "keywords": [],
+  "author": "RT",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^20.12.12",
+    "nodemon": "^3.1.0",
+    "typescript": "^5.4.5"
+  }
+}
