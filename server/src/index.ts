@@ -1,22 +1,56 @@
+import http from 'http';
+import express from 'express';
+import * as dotenv from 'dotenv';
+import cors from 'cors';
+
 import { PostgresDataSource } from './db/data-source';
-import { Post } from './db/entities/Post';
+
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
+import { buildSchema } from 'type-graphql';
+import { PostResolver } from './resolvers/post';
+
+const PORT = Number(process.env.SERVER_PORT) || 4000;
 
 const main = async () => {
   try {
     await PostgresDataSource.initialize();
 
-    const post = new Post();
+    const app = express();
+    const httpServer = http.createServer(app);
 
-    post.text = 'hello hello';
-    post.title = 'This is the new title';
+    const server = new ApolloServer({
+      schema: await buildSchema({
+        resolvers: [PostResolver],
+        validate: false,
+      }),
+      plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+    });
 
-    await PostgresDataSource.manager.save(post);
+    await server.start();
 
-    const foundPost = await PostgresDataSource.manager.find(Post);
-    console.log(foundPost, 'FOUND POST');
+    app.use(
+      '/graphql',
+      cors(),
+      express.json(),
+      expressMiddleware(server, {
+        context: async () => ({
+          manager: PostgresDataSource.manager,
+        }),
+      })
+    );
+
+    httpServer.listen(PORT, () => {
+      dotenv.config();
+
+      console.log(`Server started on port http://localhost:${PORT}`);
+    });
   } catch (err) {
     console.error(err);
+
+    throw new Error('theres a problem!');
   }
 };
 
-main().catch((err) => console.error(err));
+main();
