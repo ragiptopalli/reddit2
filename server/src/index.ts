@@ -9,7 +9,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { buildSchema } from 'type-graphql';
-import { PostResolver } from './resolvers/post';
+import { PostResolver } from './db/resolvers/post';
 
 const PORT = Number(process.env.SERVER_PORT) || 4000;
 
