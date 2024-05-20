@@ -1,10 +1,11 @@
-import { dbEnv } from '../../util/databaseEnvSchema';
+import { dbEnv } from '../../util/dbEnvSchema';
 
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Post } from './entities/Post';
+import { User } from './entities/User';
 
-export const PostgresDataSource = new DataSource({
+const pgDataSource = new DataSource({
   type: dbEnv.DB_TYPE,
   host: dbEnv.DB_HOST,
   port: dbEnv.DB_PORT,
@@ -13,5 +14,7 @@ export const PostgresDataSource = new DataSource({
   database: dbEnv.DB_NAME,
   synchronize: true,
   logging: true,
-  entities: [Post],
+  entities: [Post, User],
 });
+
+export default pgDataSource;
