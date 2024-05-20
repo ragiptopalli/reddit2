@@ -1,4 +1,4 @@
-import { isQueryFailedError } from './../../../util/pgQueryError';
+import { isQueryFailedError } from '../../../utils/pgQueryError';
 import { MyContext } from 'src/types';
 import { User } from '../entities/User';
 import {
@@ -8,6 +8,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from 'type-graphql';
 
@@ -43,10 +44,25 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { manager, req }: MyContext) {
+    const { userId } = req.session;
+
+    if (!userId) {
+      return null;
+    }
+
+    const user = await manager.findOne(User, {
+      where: { id: userId },
+    });
+
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { manager }: MyContext
+    @Ctx() { manager, req }: MyContext
   ): Promise<UserResponse> {
     const { username, password } = options;
 
@@ -98,6 +114,9 @@ export class UserResolver {
       throw new Error("There's an error with the signup");
     }
 
+    // set the cookie and auto login the user
+    req.session.userId = user.id;
+
     return {
       user,
     };
@@ -106,7 +125,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { manager }: MyContext
+    @Ctx() { manager, req }: MyContext
   ): Promise<UserResponse> {
     const { username, password } = options;
 
@@ -135,6 +154,8 @@ export class UserResolver {
         ],
       };
     }
+
+    req.session.userId = user.id;
 
     return {
       user,
