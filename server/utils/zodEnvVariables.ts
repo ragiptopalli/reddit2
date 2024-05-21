@@ -3,11 +3,17 @@ import { z } from 'zod';
 const envSchema = z.object({
   DB_TYPE: z.enum(['postgres']),
   DB_HOST: z.string(),
-  DB_PORT: z.string().transform((val) => parseInt(val, 10)),
+  DB_PORT: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .pipe(z.number()),
   DB_USERNAME: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
-  SERVER_PORT: z.string().transform((val) => parseInt(val, 10)),
+  SERVER_PORT: z
+    .string()
+    .transform((val) => parseInt(val, 10))
+    .pipe(z.number()),
   REDIS_CLIENT_SECRET: z.string(),
 });
 
