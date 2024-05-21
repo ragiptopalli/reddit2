@@ -12,7 +12,12 @@ import {
 
 import Link from 'next/link';
 
-const NavLink = ({ href, text }: { href: string; text: string }) => {
+interface P {
+  href: string;
+  text: string;
+}
+
+const NavLink = ({ href, text }: Readonly<P>) => {
   const pathname = usePathname();
   const isActive = pathname === href;
 
