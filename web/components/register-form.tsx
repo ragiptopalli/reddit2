@@ -20,6 +20,7 @@ import {
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
 import { gql, useMutation } from '@apollo/client';
+import { useToast } from './ui/use-toast';
 
 const REGISTER_MUTATION = gql`
   mutation RegisterUser($options: UsernamePasswordInput!) {
@@ -36,7 +37,8 @@ const REGISTER_MUTATION = gql`
 `;
 
 export const RegisterForm = () => {
-  const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
+  const { toast } = useToast();
+  const [register, { data }] = useMutation(REGISTER_MUTATION);
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -55,6 +57,13 @@ export const RegisterForm = () => {
         },
       },
     });
+    if (data?.register.errors) {
+      toast({
+        variant: 'destructive',
+        title: 'Username',
+        description: data.register.errors.at(0).message,
+      });
+    }
   };
 
   return (

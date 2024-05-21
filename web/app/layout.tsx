@@ -6,6 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { GraphqlProvider } from '@/lib/apollo/Apollo';
+import { Toaster } from '@/components/ui/toaster';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -25,10 +26,7 @@ export default function RootLayout({
   return (
     <html lang='en'>
       <body
-        className={cn(
-          'min-h-screen bg-background font-sans antialiased mx-auto flex flex-col items-center justify-between',
-          fontSans.variable
-        )}
+        className={cn('bg-background font-sans antialiased', fontSans.variable)}
       >
         <ThemeProvider
           attribute='class'
@@ -37,11 +35,18 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <GraphqlProvider>
-            <Header />
-            {children}
-            <Footer />
+            <div
+              className={
+                'min-h-screen mx-auto flex flex-col items-center justify-between'
+              }
+            >
+              <Header />
+              {children}
+              <Footer />
+            </div>
           </GraphqlProvider>
         </ThemeProvider>
+        <Toaster />
       </body>
     </html>
   );
