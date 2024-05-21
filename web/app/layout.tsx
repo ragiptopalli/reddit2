@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
+import { GraphqlProvider } from '@/lib/apollo/Apollo';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -35,9 +36,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          {children}
-          <Footer />
+          <GraphqlProvider>
+            <Header />
+            {children}
+            <Footer />
+          </GraphqlProvider>
         </ThemeProvider>
       </body>
     </html>

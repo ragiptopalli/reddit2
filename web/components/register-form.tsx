@@ -19,8 +19,25 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
+import { gql, useMutation } from '@apollo/client';
+
+const REGISTER_MUTATION = gql`
+  mutation RegisterUser($options: UsernamePasswordInput!) {
+    register(options: $options) {
+      errors {
+        field
+        message
+      }
+      user {
+        username
+      }
+    }
+  }
+`;
 
 export const RegisterForm = () => {
+  const [register, { data, loading, error }] = useMutation(REGISTER_MUTATION);
+
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -29,8 +46,15 @@ export const RegisterForm = () => {
     },
   });
 
-  const onSubmit = (values: RegisterSchemaType) => {
-    console.log(values);
+  const onSubmit = async (values: RegisterSchemaType) => {
+    await register({
+      variables: {
+        options: {
+          username: values.username,
+          password: values.password,
+        },
+      },
+    });
   };
 
   return (
