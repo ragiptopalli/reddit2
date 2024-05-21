@@ -4,7 +4,11 @@ import { usePathname } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 
 import Link from 'next/link';
-import { FrameIcon, HamburgerMenuIcon } from '@radix-ui/react-icons';
+import {
+  FrameIcon,
+  HamburgerMenuIcon,
+  RocketIcon,
+} from '@radix-ui/react-icons';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
 
@@ -17,7 +21,7 @@ export const Header = () => {
           href='/'
           className='flex items-center gap-2 text-lg font-semibold md:text-base'
         >
-          <FrameIcon className='h-6 w-6' />
+          <RocketIcon className='h-6 w-6' />
           <span className='sr-only'>Reddit</span>
         </Link>
         <Link
@@ -52,7 +56,7 @@ export const Header = () => {
               href='/'
               className='flex items-center gap-2 text-lg font-semibold'
             >
-              <FrameIcon className='h-6 w-6' />
+              <RocketIcon className='h-6 w-6' />
               <span className='sr-only'>Reddit</span>
             </Link>
             <Link
