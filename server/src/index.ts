@@ -41,8 +41,8 @@ const main = async () => {
           maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years,
           httpOnly: true,
           sameSite: 'lax',
-          secure: false,
-          // secure: process.env.NODE_ENV === 'production', //cookie only works in https
+          // secure: false,
+          secure: process.env.NODE_ENV === 'production', //cookie only works in https
         },
         resave: false, // required: force lightweight session keep alive (touch)
         saveUninitialized: false, // recommended: only save session when data exists

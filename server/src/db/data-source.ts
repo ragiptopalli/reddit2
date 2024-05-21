@@ -4,6 +4,7 @@ import 'reflect-metadata';
 import { DataSource } from 'typeorm';
 import { Post } from './entities/Post';
 import { User } from './entities/User';
+import { stringToBoolean } from '../../utils/stringToBoolean';
 
 config();
 
@@ -14,8 +15,8 @@ const pgDataSource = new DataSource({
   username: process.env.DB_USERNAME,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  synchronize: true,
-  logging: true,
+  synchronize: stringToBoolean(process.env.DB_SYNCHRONIZE),
+  logging: stringToBoolean(process.env.DB_LOGGING),
   entities: [Post, User],
 });
 
