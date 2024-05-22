@@ -19,13 +19,13 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { useToast } from './ui/use-toast';
 import { useRegisterUserMutation } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
+import { toErrorMap } from '@/lib/utils';
 
 export const RegisterForm = () => {
   const router = useRouter();
-  const { toast } = useToast();
+
   const [register] = useRegisterUserMutation();
 
   const form = useForm<RegisterSchemaType>({
@@ -46,11 +46,7 @@ export const RegisterForm = () => {
       },
     });
     if (data?.register.errors) {
-      toast({
-        variant: 'destructive',
-        title: 'Username',
-        description: data.register.errors.at(0)?.message ?? '',
-      });
+      toErrorMap(data.register.errors, form.setError);
     } else {
       router.push('/');
     }
@@ -58,7 +54,12 @@ export const RegisterForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (values) => {
+          console.log(values);
+        })}
+        className='space-y-8'
+      >
         <FormField
           control={form.control}
           name='username'
