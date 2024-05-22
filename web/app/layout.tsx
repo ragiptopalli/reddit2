@@ -3,8 +3,6 @@ import { Fira_Code as FontSans } from 'next/font/google';
 import '../styles/globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Header } from '@/components/header';
-import Footer from '@/components/footer';
 import { GraphqlProvider } from '@/lib/apollo/Apollo';
 import { Toaster } from '@/components/ui/sonner';
 
@@ -34,17 +32,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <GraphqlProvider>
-            <div
-              className={
-                'min-h-screen mx-auto flex flex-col items-center justify-between'
-              }
-            >
-              <Header />
-              {children}
-              <Footer />
-            </div>
-          </GraphqlProvider>
+          <GraphqlProvider>{children}</GraphqlProvider>
         </ThemeProvider>
         <Toaster richColors />
       </body>
