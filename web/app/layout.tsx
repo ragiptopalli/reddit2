@@ -4,7 +4,7 @@ import '../styles/globals.css';
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
-import { Footer } from '@/components/footer';
+import Footer from '@/components/footer';
 import { GraphqlProvider } from '@/lib/apollo/Apollo';
 import { Toaster } from '@/components/ui/sonner';
 

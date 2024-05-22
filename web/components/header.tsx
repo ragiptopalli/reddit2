@@ -7,7 +7,12 @@ import Link from 'next/link';
 import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
-import { useMeQuery } from '@/lib/graphql/generated/graphql';
+import {
+  MeDocument,
+  MeQuery,
+  useLogoutMutation,
+  useMeQuery,
+} from '@/lib/graphql/generated/graphql';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +26,7 @@ import { CircleUser } from 'lucide-react';
 export const Header = () => {
   const pathname = usePathname();
 
+  const [logout] = useLogoutMutation();
   const { data, loading, error } = useMeQuery();
 
   if (loading) {
@@ -30,6 +36,25 @@ export const Header = () => {
   if (error) {
     return 'theres an error!';
   }
+
+  const handleLogout = () => {
+    logout({
+      update(cache, { data }) {
+        const existing = cache.readQuery<MeQuery>({
+          query: MeDocument,
+        });
+
+        if (!existing || !data?.logout) return;
+
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            me: null,
+          },
+        });
+      },
+    });
+  };
 
   return (
     <header className='h-16 gap-4 flex w-full items-center justify-between border-b border-border/40 px-4 md:px-6'>
@@ -143,7 +168,10 @@ export const Header = () => {
             <DropdownMenuContent align='end'>
               <DropdownMenuLabel>{data.me.username}</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem className='cursor-pointer'>
+              <DropdownMenuItem
+                onClick={handleLogout}
+                className='cursor-pointer'
+              >
                 Logout
               </DropdownMenuItem>
               <DropdownMenuSeparator />

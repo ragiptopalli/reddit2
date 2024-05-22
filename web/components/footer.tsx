@@ -1,9 +1,7 @@
-'use client';
-
-export const Footer = () => {
+export default function Footer() {
   return (
-    <footer>
-      <p className='text-xl text-muted-foreground'>All rights reserved, 2024</p>
+    <footer className='text-center w-full text-zinc-400 py-5 px-7 border-t'>
+      <small>&copy; 2024. All rights reserved.</small>
     </footer>
   );
-};
+}

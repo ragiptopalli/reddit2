@@ -15,6 +15,7 @@ import { UserResolver } from './db/resolvers/user';
 import RedisStore from 'connect-redis';
 import { createClient } from 'redis';
 import session from 'express-session';
+import { COOKIE_NAME } from './constants';
 
 const PORT = process.env.SERVER_PORT || 4000;
 
@@ -37,11 +38,11 @@ const main = async () => {
     app.use(
       session({
         store: redisStore,
+        name: COOKIE_NAME,
         cookie: {
           maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years,
           httpOnly: true,
-          sameSite: 'lax',
-          // secure: false,
+          sameSite: 'lax', //csrf
           secure: process.env.NODE_ENV === 'production', //cookie only works in https
         },
         resave: false, // required: force lightweight session keep alive (touch)

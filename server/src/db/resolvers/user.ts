@@ -13,6 +13,7 @@ import {
 } from 'type-graphql';
 
 import bcrypt from 'bcrypt';
+import { COOKIE_NAME } from '../../constants';
 
 const SALT_ROUNDS = 12;
 
@@ -160,5 +161,20 @@ export class UserResolver {
     return {
       user,
     };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+        resolve(true);
+      })
+    );
   }
 }
