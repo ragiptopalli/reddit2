@@ -6,7 +6,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 import { GraphqlProvider } from '@/lib/apollo/Apollo';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/ui/sonner';
 
 const fontSans = FontSans({
   subsets: ['latin'],
@@ -46,7 +46,7 @@ export default function RootLayout({
             </div>
           </GraphqlProvider>
         </ThemeProvider>
-        <Toaster />
+        <Toaster richColors />
       </body>
     </html>
   );

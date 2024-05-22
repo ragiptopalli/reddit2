@@ -5,7 +5,7 @@ mutation RegisterUser($options: UsernamePasswordInput!) {
       message
     }
     user {
-      username
+      ...UserFragment
     }
   }
 }

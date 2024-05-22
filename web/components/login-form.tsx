@@ -18,14 +18,26 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { useLoginMutation } from '@/lib/graphql/generated/graphql';
+import {
+  useLoginMutation,
+  MeDocument,
+  MeQuery,
+} from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
 import { toErrorMap } from '@/lib/utils';
+import { toast } from 'sonner';
 
 export const LoginForm = () => {
   const router = useRouter();
 
-  const [login] = useLoginMutation();
+  const [login] = useLoginMutation({
+    onCompleted() {
+      toast.success('Logged in successfully, redirecting...');
+    },
+    onError() {
+      toast.error('There was an error');
+    },
+  });
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -42,6 +54,20 @@ export const LoginForm = () => {
           username,
           password,
         },
+      },
+      update(cache, { data }) {
+        const existing = cache.readQuery<MeQuery>({
+          query: MeDocument,
+        });
+
+        if (!existing || !data?.login) return;
+
+        cache.writeQuery<MeQuery>({
+          query: MeDocument,
+          data: {
+            me: existing.me || data.login.user,
+          },
+        });
       },
     });
     if (data?.login.errors) {
