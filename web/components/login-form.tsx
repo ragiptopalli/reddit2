@@ -1,9 +1,9 @@
 'use client';
 
 import {
-  registerSchema,
-  type RegisterSchemaType,
-} from '@/lib/formSchemaValidation/register.schema';
+  loginSchema,
+  type LoginSchemaType,
+} from '@/lib/formSchemaValidation/login.schema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -19,34 +18,34 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { useRegisterUserMutation } from '@/lib/graphql/generated/graphql';
+import { useLoginMutation } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
 import { toErrorMap } from '@/lib/utils';
 
-export const RegisterForm = () => {
+export const LoginForm = () => {
   const router = useRouter();
 
-  const [register] = useRegisterUserMutation();
+  const [login] = useLoginMutation();
 
-  const form = useForm<RegisterSchemaType>({
-    resolver: zodResolver(registerSchema),
+  const form = useForm<LoginSchemaType>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: '',
       password: '',
     },
   });
 
-  const onSubmit = async (values: RegisterSchemaType) => {
-    const { data } = await register({
+  const onSubmit = async ({ username, password }: LoginSchemaType) => {
+    const { data } = await login({
       variables: {
         options: {
-          username: values.username,
-          password: values.password,
+          username,
+          password,
         },
       },
     });
-    if (data?.register.errors) {
-      toErrorMap(data.register.errors, form.setError);
+    if (data?.login.errors) {
+      toErrorMap(data.login.errors, form.setError);
     } else {
       router.push('/');
     }
@@ -69,9 +68,6 @@ export const RegisterForm = () => {
               <FormControl>
                 <Input type='text' {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -85,21 +81,18 @@ export const RegisterForm = () => {
               <FormControl>
                 <Input type='password' {...field} />
               </FormControl>
-              <FormDescription>
-                Please choose a strong password!.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <Button type='submit' className='w-full'>
-          Submit
+          Log In
         </Button>
       </form>
       <div className='mt-4 text-center text-sm'>
-        Already have an account?
-        <Link href='/login' className='underline ml-2'>
-          Log In
+        Don&apos;t have an account?
+        <Link href='/register' className='underline ml-2'>
+          Register
         </Link>
       </div>
     </Form>
