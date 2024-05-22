@@ -19,26 +19,14 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import Link from 'next/link';
-import { gql, useMutation } from '@apollo/client';
 import { useToast } from './ui/use-toast';
-
-const REGISTER_MUTATION = gql`
-  mutation RegisterUser($options: UsernamePasswordInput!) {
-    register(options: $options) {
-      errors {
-        field
-        message
-      }
-      user {
-        username
-      }
-    }
-  }
-`;
+import { useRegisterUserMutation } from '@/lib/graphql/generated/graphql';
+import { useRouter } from 'next/navigation';
 
 export const RegisterForm = () => {
+  const router = useRouter();
   const { toast } = useToast();
-  const [register, { data }] = useMutation(REGISTER_MUTATION);
+  const [register] = useRegisterUserMutation();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -49,7 +37,7 @@ export const RegisterForm = () => {
   });
 
   const onSubmit = async (values: RegisterSchemaType) => {
-    await register({
+    const { data } = await register({
       variables: {
         options: {
           username: values.username,
@@ -61,8 +49,10 @@ export const RegisterForm = () => {
       toast({
         variant: 'destructive',
         title: 'Username',
-        description: data.register.errors.at(0).message,
+        description: data.register.errors.at(0)?.message ?? '',
       });
+    } else {
+      router.push('/');
     }
   };
 
