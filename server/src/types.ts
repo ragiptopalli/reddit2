@@ -5,7 +5,7 @@ import { Field, InputType } from 'type-graphql';
 import { Redis } from 'ioredis';
 
 interface CustomExpressSession extends Session {
-  userId: string | null;
+  userId: string | undefined;
 }
 
 export type MyContext = {

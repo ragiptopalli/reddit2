@@ -5,7 +5,9 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
+import { Post } from './Post';
 
 @ObjectType()
 @Entity('users') // because 'user' is a reserved word in postgresql
@@ -13,14 +15,6 @@ export class User {
   @Field()
   @PrimaryGeneratedColumn('uuid')
   id!: string;
-
-  @Field()
-  @CreateDateColumn()
-  createdAt!: Date;
-
-  @Field()
-  @UpdateDateColumn()
-  updatedAt!: Date;
 
   @Field()
   @Column({ unique: true })
@@ -32,4 +26,15 @@ export class User {
 
   @Column()
   password!: string;
+
+  @OneToMany(() => Post, (post) => post.creator)
+  posts: Post[];
+
+  @Field()
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @Field()
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
