@@ -55,8 +55,49 @@ export class UserResolver {
     return user;
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => User)
   async resetPassword(
+    @Arg('token') token: string,
+    @Arg('newPassword') newPassword: string,
+    @Ctx() { manager, redis, req }: MyContext
+  ): Promise<User> {
+    if (newPassword.length < 3) {
+      throw new Error('Password should be at least 3 characters long!');
+    }
+
+    const key = FORGET_PASSWORD_PREFIX + token;
+    const userId = await redis.get(key);
+
+    if (!userId) {
+      throw new Error('The token is invalid!');
+    }
+
+    const user = await manager.findOneBy(User, { id: userId });
+
+    if (!user) {
+      throw new Error('User no longer exists!');
+    }
+
+    const salt = await bcrypt.genSalt(SALT_ROUNDS);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    user.password = hashedPassword;
+
+    try {
+      await manager.save(user);
+      await redis.del(key);
+    } catch (err) {
+      throw new Error('Could not reset the password!');
+    }
+
+    // log in user after changing the password
+    req.session.userId = user.id;
+
+    return user;
+  }
+
+  @Mutation(() => Boolean)
+  async forgetPassowrdLink(
     @Arg('email') email: string,
     @Ctx() { manager, redis }: MyContext
   ) {
@@ -66,7 +107,7 @@ export class UserResolver {
     });
 
     if (!user) {
-      return true;
+      return false;
     }
 
     const token = crypto.randomUUID();

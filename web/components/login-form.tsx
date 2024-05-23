@@ -31,7 +31,9 @@ export const LoginForm = () => {
 
   const [login] = useLoginMutation({
     onCompleted() {
-      toast.success('Logged in successfully, redirecting...');
+      toast.success('Logged in successfully, redirecting...', {
+        duration: 1000,
+      });
       router.push('/');
     },
     onError(error) {
@@ -108,6 +110,11 @@ export const LoginForm = () => {
           Log In
         </Button>
       </form>
+      <div className='mt-4 text-center text-sm'>
+        <Link href='/forgot-password' className='underline ml-2'>
+          Forgot Password?
+        </Link>
+      </div>
       <div className='mt-4 text-center text-sm'>
         Don&apos;t have an account?
         <Link href='/register' className='underline ml-2'>
