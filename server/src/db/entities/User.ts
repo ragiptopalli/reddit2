@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @ObjectType()
-@Entity()
+@Entity('users') // because 'user' is a reserved word in postgresql
 export class User {
   @Field()
   @PrimaryGeneratedColumn('uuid')
