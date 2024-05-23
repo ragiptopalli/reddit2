@@ -1,20 +1,21 @@
 import { MyContext } from 'src/types';
 import { Post } from '../entities/Post';
 import { Arg, Ctx, Mutation, Query, Resolver } from 'type-graphql';
+import { QueryFailedError } from 'typeorm';
 
 @Resolver()
 export class PostResolver {
   @Query(() => [Post])
-  posts(@Ctx() { manager }: MyContext): Promise<Post[]> {
-    return manager.find(Post, {});
+  async posts(@Ctx() { manager }: MyContext): Promise<Post[]> {
+    return await manager.find(Post, {});
   }
 
   @Query(() => Post, { nullable: true })
-  post(
+  async post(
     @Arg('id') id: string,
     @Ctx() { manager }: MyContext
   ): Promise<Post | null> {
-    return manager.findOneBy(Post, { id });
+    return await manager.findOneBy(Post, { id });
   }
 
   @Mutation(() => Post)
@@ -24,7 +25,15 @@ export class PostResolver {
     @Ctx() { manager }: MyContext
   ): Promise<Post> {
     const post = manager.create(Post, { title, text });
-    await manager.save(post);
+    try {
+      await manager.save(post);
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new Error(err.message);
+      } else {
+        throw new Error('An unexpected error occured!');
+      }
+    }
     return post;
   }
 
@@ -44,7 +53,16 @@ export class PostResolver {
     post.title = title;
     post.text = text;
 
-    await manager.save(post);
+    try {
+      await manager.save(post);
+    } catch (err) {
+      if (err instanceof QueryFailedError) {
+        throw new Error(err.message);
+      } else {
+        throw new Error('An unexpected error occured!');
+      }
+    }
+
     return post;
   }
 
@@ -57,7 +75,11 @@ export class PostResolver {
       await manager.delete(Post, { id });
       return true;
     } catch (err) {
-      return false;
+      if (err instanceof QueryFailedError) {
+        throw new Error(err.message);
+      } else {
+        throw new Error('An unexpected error occured!');
+      }
     }
   }
 }

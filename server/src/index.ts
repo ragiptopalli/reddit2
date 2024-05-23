@@ -19,15 +19,15 @@ import { COOKIE_NAME } from './constants';
 
 const PORT = process.env.SERVER_PORT || 4000;
 
-const redis = new Redis();
-
 const main = async () => {
   try {
     await pgDataSource.initialize();
 
     const app = express();
+
     const httpServer = http.createServer(app);
 
+    const redis = new Redis();
     const redisStore = new RedisStore({
       client: redis,
       prefix: 'reddit2:',
@@ -36,8 +36,8 @@ const main = async () => {
 
     app.use(
       session({
-        store: redisStore,
         name: COOKIE_NAME,
+        store: redisStore,
         cookie: {
           maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years,
           httpOnly: true,
@@ -69,9 +69,9 @@ const main = async () => {
       express.json(),
       expressMiddleware(server, {
         context: async ({ req, res }) => ({
-          manager: pgDataSource.manager,
           req,
           res,
+          manager: pgDataSource.manager,
           redis,
         }),
       })
