@@ -42,6 +42,7 @@ export const RegisterForm = () => {
         options: {
           username: values.username,
           password: values.password,
+          email: values.email,
         },
       },
     });
@@ -72,6 +73,20 @@ export const RegisterForm = () => {
               <FormDescription>
                 This is your public display name.
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name='email'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Email</FormLabel>
+              <FormControl>
+                <Input type='email' {...field} />
+              </FormControl>
+              <FormDescription>Your email address!.</FormDescription>
               <FormMessage />
             </FormItem>
           )}

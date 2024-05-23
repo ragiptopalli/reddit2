@@ -24,7 +24,6 @@ import {
   MeQuery,
 } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
-import { toErrorMap } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export const LoginForm = () => {
@@ -33,27 +32,26 @@ export const LoginForm = () => {
   const [login] = useLoginMutation({
     onCompleted() {
       toast.success('Logged in successfully, redirecting...');
+      router.push('/');
     },
-    onError() {
-      toast.error('There was an error');
+    onError(error) {
+      toast.error(error.message);
     },
   });
 
   const form = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
-      username: '',
+      usernameOrEmail: '',
       password: '',
     },
   });
 
-  const onSubmit = async ({ username, password }: LoginSchemaType) => {
-    const { data } = await login({
+  const onSubmit = async ({ usernameOrEmail, password }: LoginSchemaType) => {
+    await login({
       variables: {
-        options: {
-          username,
-          password,
-        },
+        password,
+        usernameOrEmail,
       },
       update(cache, { data }) {
         const existing = cache.readQuery<MeQuery>({
@@ -65,16 +63,11 @@ export const LoginForm = () => {
         cache.writeQuery<MeQuery>({
           query: MeDocument,
           data: {
-            me: existing.me || data.login.user,
+            me: existing.me || data.login,
           },
         });
       },
     });
-    if (data?.login.errors) {
-      toErrorMap(data.login.errors, form.setError);
-    } else {
-      router.push('/');
-    }
   };
 
   return (
@@ -87,10 +80,10 @@ export const LoginForm = () => {
       >
         <FormField
           control={form.control}
-          name='username'
+          name='usernameOrEmail'
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Username or Email</FormLabel>
               <FormControl>
                 <Input type='text' {...field} />
               </FormControl>
