@@ -1,11 +1,11 @@
 import { isQueryFailedError } from '../../../utils/pgQueryError';
-import { MyContext } from 'src/types';
+import { MyContext, UsernamePasswordInput } from '../../types';
 import { User } from '../entities/User';
+
 import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
@@ -14,16 +14,9 @@ import {
 
 import bcrypt from 'bcrypt';
 import { COOKIE_NAME } from '../../constants';
+import { validateRegister } from '../../../utils/validateRegister';
 
 const SALT_ROUNDS = 12;
-
-@InputType()
-class UsernamePasswordInput {
-  @Field()
-  username!: string;
-  @Field()
-  password!: string;
-}
 
 @ObjectType()
 class FieldError {
@@ -60,33 +53,33 @@ export class UserResolver {
     return user;
   }
 
+  @Mutation(() => Boolean)
+  async resetPassword(
+    @Arg('email') email: string,
+    @Ctx() { manager }: MyContext
+  ) {
+    console.log(email);
+    const user = await manager.findOne(User, {
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error('User with that email does not exist');
+    }
+
+    return true;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
     @Ctx() { manager, req }: MyContext
   ): Promise<UserResponse> {
-    const { username, password } = options;
+    const { username, password, email } = options;
 
-    if (username.length < 2) {
-      return {
-        errors: [
-          {
-            field: 'username',
-            message: 'Username should be at least 2 characters long!',
-          },
-        ],
-      };
-    }
-
-    if (password.length < 3) {
-      return {
-        errors: [
-          {
-            field: 'password',
-            message: 'Password should be at least 3 characters long!',
-          },
-        ],
-      };
+    const errors = validateRegister(options);
+    if (errors) {
+      return { errors };
     }
 
     const salt = await bcrypt.genSalt(SALT_ROUNDS);
@@ -95,6 +88,7 @@ export class UserResolver {
     const user = manager.create(User, {
       username,
       password: hashedPassword,
+      email,
     });
 
     try {
@@ -123,44 +117,31 @@ export class UserResolver {
     };
   }
 
-  @Mutation(() => UserResponse)
+  @Mutation(() => User)
   async login(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('password') password: string,
     @Ctx() { manager, req }: MyContext
-  ): Promise<UserResponse> {
-    const { username, password } = options;
-
-    const user = await manager.findOneBy(User, { username });
+  ): Promise<User> {
+    const user = await manager.findOne(User, {
+      where: !usernameOrEmail.includes('@')
+        ? { username: usernameOrEmail }
+        : { email: usernameOrEmail },
+    });
 
     if (!user) {
-      return {
-        errors: [
-          {
-            field: 'username',
-            message: 'The username does not exist',
-          },
-        ],
-      };
+      throw new Error('The username does not exist');
     }
 
     const isEqual = await bcrypt.compare(password, user.password);
 
     if (!isEqual) {
-      return {
-        errors: [
-          {
-            field: 'password',
-            message: 'The password is incorrect',
-          },
-        ],
-      };
+      throw new Error('The password is incorrect');
     }
 
     req.session.userId = user.id;
 
-    return {
-      user,
-    };
+    return user;
   }
 
   @Mutation(() => Boolean)

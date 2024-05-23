@@ -26,6 +26,10 @@ export class User {
   @Column({ unique: true })
   username!: string;
 
+  @Field()
+  @Column({ unique: true })
+  email!: string;
+
   @Column()
   password!: string;
 }
