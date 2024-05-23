@@ -13,10 +13,12 @@ import {
 } from 'type-graphql';
 
 import bcrypt from 'bcrypt';
-import { COOKIE_NAME } from '../../constants';
+import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../../constants';
 import { validateRegister } from '../../../utils/validateRegister';
+import { sendEmail } from '../../../utils/sendEmail';
 
 const SALT_ROUNDS = 12;
+const EXPIRY_IN_SECONDS = 3600; // 1 hour
 
 @ObjectType()
 class FieldError {
@@ -56,7 +58,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async resetPassword(
     @Arg('email') email: string,
-    @Ctx() { manager }: MyContext
+    @Ctx() { manager, redis }: MyContext
   ) {
     console.log(email);
     const user = await manager.findOne(User, {
@@ -64,8 +66,22 @@ export class UserResolver {
     });
 
     if (!user) {
-      throw new Error('User with that email does not exist');
+      return true;
     }
+
+    const token = crypto.randomUUID();
+
+    await redis.set(
+      FORGET_PASSWORD_PREFIX + token,
+      user.id,
+      'EX',
+      EXPIRY_IN_SECONDS
+    );
+
+    sendEmail(
+      email,
+      `<a href="http://localhost:3000/reset-password/${token}">Reset Password</a>`
+    );
 
     return true;
   }

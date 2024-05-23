@@ -13,24 +13,23 @@ import { PostResolver } from './db/resolvers/post';
 import { UserResolver } from './db/resolvers/user';
 
 import RedisStore from 'connect-redis';
-import { createClient } from 'redis';
+import Redis from 'ioredis';
 import session from 'express-session';
 import { COOKIE_NAME } from './constants';
 
 const PORT = process.env.SERVER_PORT || 4000;
 
-let redisClient = createClient();
+const redis = new Redis();
 
 const main = async () => {
   try {
     await pgDataSource.initialize();
-    redisClient.connect();
 
     const app = express();
     const httpServer = http.createServer(app);
 
     const redisStore = new RedisStore({
-      client: redisClient,
+      client: redis,
       prefix: 'reddit2:',
       disableTouch: true,
     });
@@ -73,6 +72,7 @@ const main = async () => {
           manager: pgDataSource.manager,
           req,
           res,
+          redis,
         }),
       })
     );
