@@ -36,8 +36,7 @@ export interface Mutation {
 
 
 export interface MutationCreatePostArgs {
-  text?: InputMaybe<Scalars['String']['input']>;
-  title: Scalars['String']['input'];
+  input: PostInput;
 }
 
 
@@ -76,10 +75,17 @@ export interface MutationUpdatePostArgs {
 
 export interface Post {
   createdAt: Scalars['DateTimeISO']['output'];
+  creatorId: Scalars['String']['output'];
   id: Scalars['String']['output'];
+  points?: Maybe<Scalars['Float']['output']>;
   text?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
+}
+
+export interface PostInput {
+  text?: InputMaybe<Scalars['String']['input']>;
+  title: Scalars['String']['input'];
 }
 
 export interface Query {
@@ -113,6 +119,13 @@ export interface UsernamePasswordInput {
 }
 
 export type UserFragmentFragment = { id: string, username: string, email: string };
+
+export type CreatePostMutationVariables = Exact<{
+  input: PostInput;
+}>;
+
+
+export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points?: number | null, creatorId: string, createdAt: any, updatedAt: any } };
 
 export type ForgetPasswordMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -161,6 +174,44 @@ export const UserFragmentFragmentDoc = gql`
   email
 }
     `;
+export const CreatePostDocument = gql`
+    mutation CreatePost($input: PostInput!) {
+  createPost(input: $input) {
+    id
+    title
+    text
+    points
+    creatorId
+    createdAt
+    updatedAt
+  }
+}
+    `;
+export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
+
+/**
+ * __useCreatePostMutation__
+ *
+ * To run a mutation, you first call `useCreatePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreatePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createPostMutation, { data, loading, error }] = useCreatePostMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<CreatePostMutation, CreatePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreatePostMutation, CreatePostMutationVariables>(CreatePostDocument, options);
+      }
+export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
+export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
 export const ForgetPasswordDocument = gql`
     mutation ForgetPassword($email: String!) {
   forgetPassowrdLink(email: $email)

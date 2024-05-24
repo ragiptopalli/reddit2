@@ -21,21 +21,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import { CircleUser } from 'lucide-react';
+import { CircleUser, Loader2 } from 'lucide-react';
+import { CreatePostModal } from './create-post-modal';
 
 export const Header = () => {
   const pathname = usePathname();
 
   const [logout] = useLogoutMutation();
-  const { data, loading, error } = useMeQuery();
+  const { data, loading } = useMeQuery();
 
-  if (loading) {
-    return 'Loading..';
-  }
-
-  if (error) {
-    return 'theres an error!';
-  }
+  if (loading) return <Loader2 className='mt-2 h-4 w-4 animate-spin' />;
 
   const handleLogout = () => {
     logout({
@@ -101,7 +96,7 @@ export const Header = () => {
             >
               About
             </Link>
-            {!data?.me ? (
+            {!data?.me && (
               <>
                 <Link
                   href='/login'
@@ -124,64 +119,73 @@ export const Header = () => {
                   Register
                 </Link>
               </>
-            ) : (
-              <h3>{data.me.username}</h3>
             )}
           </nav>
         </SheetContent>
       </Sheet>
-      <div className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
-        {!data?.me ? (
-          <>
-            <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
-              <Link
-                href='/login'
-                className={`${
-                  pathname === '/login'
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-              >
-                Login
-              </Link>
-              <Link
-                href='/register'
-                className={`${
-                  pathname === '/register'
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
-                } transition-colors hover:text-foreground`}
-              >
-                Register
-              </Link>
-            </div>
-            <ThemeToggle />
-          </>
-        ) : (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant='secondary' size='icon' className='rounded-full'>
-                <CircleUser className='h-5 w-5' />
-                <span className='sr-only'>Toggle user menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align='end'>
-              <DropdownMenuLabel>{data.me.username}</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleLogout}
-                className='cursor-pointer'
-              >
-                Logout
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className='gap-2 h-10'>
-                Toggle Theme <ThemeToggle />
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
-      </div>
+      {!data?.me ? (
+        <div className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
+          <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
+            <Link
+              href='/login'
+              className={`${
+                pathname === '/login'
+                  ? 'text-foreground'
+                  : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
+            >
+              Login
+            </Link>
+            <Link
+              href='/register'
+              className={`${
+                pathname === '/register'
+                  ? 'text-foreground'
+                  : 'text-muted-foreground'
+              } transition-colors hover:text-foreground`}
+            >
+              Register
+            </Link>
+          </div>
+          <ThemeToggle />
+        </div>
+      ) : (
+        <div className='flex items-center gap-2'>
+          <CreatePostModal />
+          <UserMenu username={data.me.username} onHandleLogout={handleLogout} />
+        </div>
+      )}
     </header>
+  );
+};
+
+const UserMenu = ({
+  onHandleLogout,
+  username,
+}: {
+  onHandleLogout: () => void;
+  username: string;
+}) => {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant='outline' size='icon'>
+          <CircleUser className='h-5 w-5' />
+          <span className='sr-only'>Toggle user menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align='end'>
+        <DropdownMenuLabel>{username}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem className='gap-2 h-10'>
+          <span className='hidden md:block'>Toggle Theme</span> <ThemeToggle />
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={onHandleLogout} className='cursor-pointer'>
+          Logout
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 };
