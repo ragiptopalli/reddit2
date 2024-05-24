@@ -25,14 +25,16 @@ import {
 } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export const LoginForm = () => {
   const router = useRouter();
 
-  const [login] = useLoginMutation({
+  const [login, { loading }] = useLoginMutation({
     onCompleted() {
       toast.success('Logged in successfully, redirecting...', {
-        duration: 1000,
+        duration: 2000,
+        position: 'top-center',
       });
       router.push('/');
     },
@@ -106,8 +108,8 @@ export const LoginForm = () => {
             </FormItem>
           )}
         />
-        <Button type='submit' className='w-full'>
-          Log In
+        <Button disabled={loading} type='submit' className='w-full'>
+          {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Log In
         </Button>
       </form>
       <div className='mt-4 text-center text-sm'>

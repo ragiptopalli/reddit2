@@ -22,17 +22,19 @@ import Link from 'next/link';
 import { useRegisterUserMutation } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
 import { toErrorMap } from '@/lib/utils';
+import { Loader2 } from 'lucide-react';
 
 export const RegisterForm = () => {
   const router = useRouter();
 
-  const [register] = useRegisterUserMutation();
+  const [register, { loading }] = useRegisterUserMutation();
 
   const form = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: '',
       password: '',
+      email: '',
     },
   });
 
@@ -107,8 +109,9 @@ export const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <Button type='submit' className='w-full'>
-          Submit
+        <Button disabled={loading} type='submit' className='w-full'>
+          {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+          Register
         </Button>
       </form>
       <div className='mt-4 text-center text-sm'>
