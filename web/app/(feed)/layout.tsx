@@ -2,11 +2,11 @@ import Footer from '@/components/footer';
 import { Header } from '@/components/header';
 import { Container } from '@/components/ui/container';
 
-const DashboardLayout = ({
+export default function FeedLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
-}>) => {
+}>) {
   return (
     <Container>
       <Header />
@@ -14,6 +14,4 @@ const DashboardLayout = ({
       <Footer />
     </Container>
   );
-};
-
-export default DashboardLayout;
+}
