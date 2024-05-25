@@ -28,11 +28,12 @@ import {
   createPostSchema,
   type CreatePostSchemaType,
 } from '@/lib/formSchemaValidation/create-post-schema';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Terminal } from 'lucide-react';
 import { useState } from 'react';
 import { useCreatePostMutation } from '@/lib/graphql/generated/graphql';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 export const CreatePostModal = () => {
   const router = useRouter();
@@ -119,9 +120,6 @@ export const CreatePostModal = () => {
                     <FormControl>
                       <Textarea placeholder='What is happening?!' {...field} />
                     </FormControl>
-                    <FormDescription>
-                      You can <span>@mention</span> other users.
-                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -133,7 +131,15 @@ export const CreatePostModal = () => {
             </form>
           </Form>
         </div>
-        <DialogFooter>Footer</DialogFooter>
+        <DialogFooter>
+          <Alert>
+            <Terminal className='h-4 w-4' />
+            <AlertTitle>Reminder!</AlertTitle>
+            <AlertDescription>
+              You can <span>@mention</span> other users.
+            </AlertDescription>
+          </Alert>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
