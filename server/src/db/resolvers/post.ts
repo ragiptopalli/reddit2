@@ -56,6 +56,11 @@ export class PostResolver {
       .getMany();
   }
 
+  @Query(() => Int)
+  async postsCount(@Ctx() { manager }: MyContext) {
+    return await manager.count(Post, {});
+  }
+
   @Query(() => Post, { nullable: true })
   async post(
     @Arg('id') id: string,

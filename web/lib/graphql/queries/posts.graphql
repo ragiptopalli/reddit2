@@ -12,3 +12,7 @@ query Posts($skip: Int!, $take: Int!) {
     updatedAt
   }
 }
+
+query PostsCount {
+  postsCount
+}
