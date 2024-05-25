@@ -25,7 +25,10 @@ class PostInput {
 export class PostResolver {
   @Query(() => [Post])
   async posts(@Ctx() { manager }: MyContext): Promise<Post[]> {
-    return await manager.find(Post, {});
+    return await manager
+      .createQueryBuilder(Post, 'post')
+      .orderBy('post.createdAt', 'DESC')
+      .getMany();
   }
 
   @Query(() => Post, { nullable: true })
