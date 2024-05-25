@@ -78,7 +78,9 @@ export interface Post {
   creatorId: Scalars['String']['output'];
   id: Scalars['String']['output'];
   points?: Maybe<Scalars['Float']['output']>;
+  postCreator: User;
   text?: Maybe<Scalars['String']['output']>;
+  textSnippet: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
 }
@@ -97,6 +99,12 @@ export interface Query {
 
 export interface QueryPostArgs {
   id: Scalars['String']['input'];
+}
+
+
+export interface QueryPostsArgs {
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
 }
 
 export interface User {
@@ -167,10 +175,13 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { me?: { id: string, username: string, email: string } | null };
 
-export type PostsQueryVariables = Exact<{ [key: string]: never; }>;
+export type PostsQueryVariables = Exact<{
+  skip: Scalars['Int']['input'];
+  take: Scalars['Int']['input'];
+}>;
 
 
-export type PostsQuery = { posts: Array<{ id: string, title: string, text?: string | null, points?: number | null, creatorId: string, createdAt: any, updatedAt: any }> };
+export type PostsQuery = { posts: Array<{ id: string, title: string, textSnippet: string, points?: number | null, creatorId: string, createdAt: any, updatedAt: any, postCreator: { username: string } }> };
 
 export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
@@ -420,13 +431,16 @@ export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const PostsDocument = gql`
-    query Posts {
-  posts {
+    query Posts($skip: Int!, $take: Int!) {
+  posts(skip: $skip, take: $take) {
     id
     title
-    text
+    textSnippet
     points
     creatorId
+    postCreator {
+      username
+    }
     createdAt
     updatedAt
   }
@@ -445,10 +459,12 @@ export const PostsDocument = gql`
  * @example
  * const { data, loading, error } = usePostsQuery({
  *   variables: {
+ *      skip: // value for 'skip'
+ *      take: // value for 'take'
  *   },
  * });
  */
-export function usePostsQuery(baseOptions?: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables>) {
+export function usePostsQuery(baseOptions: Apollo.QueryHookOptions<PostsQuery, PostsQueryVariables> & ({ variables: PostsQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
         const options = {...defaultOptions, ...baseOptions}
         return Apollo.useQuery<PostsQuery, PostsQueryVariables>(PostsDocument, options);
       }

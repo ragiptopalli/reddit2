@@ -76,11 +76,19 @@ export const CreatePostModal = () => {
       update: (cache, { data }) => {
         const existingPosts = cache.readQuery<PostsQuery>({
           query: PostsDocument,
+          variables: {
+            take: 10,
+            skip: 0,
+          },
         });
 
         if (existingPosts) {
           cache.writeQuery({
             query: PostsDocument,
+            variables: {
+              take: 10,
+              skip: 0,
+            },
             data: {
               posts: [data?.createPost, ...existingPosts.posts],
             },

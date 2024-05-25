@@ -5,7 +5,7 @@ import { DataSource } from 'typeorm';
 import { Post } from './entities/Post';
 import { User } from './entities/User';
 import { stringToBoolean } from '../../utils/stringToBoolean';
-
+import path from 'path';
 config();
 
 const pgDataSource = new DataSource({
@@ -18,6 +18,7 @@ const pgDataSource = new DataSource({
   synchronize: stringToBoolean(process.env.DB_SYNCHRONIZE),
   logging: stringToBoolean(process.env.DB_LOGGING),
   entities: [Post, User],
+  migrations: [path.join(__dirname, './migrations/*')],
 });
 
 export default pgDataSource;

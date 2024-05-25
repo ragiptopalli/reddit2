@@ -1,13 +1,17 @@
 import { MyContext } from 'src/types';
 import { Post } from '../entities/Post';
+import { User } from '../entities/User';
 import {
   Arg,
   Ctx,
   Field,
+  FieldResolver,
   InputType,
+  Int,
   Mutation,
   Query,
   Resolver,
+  Root,
   UseMiddleware,
 } from 'type-graphql';
 import { QueryFailedError } from 'typeorm';
@@ -21,13 +25,34 @@ class PostInput {
   text: string;
 }
 
-@Resolver()
+@Resolver(() => Post)
 export class PostResolver {
+  @FieldResolver(() => User)
+  async postCreator(@Root() post: Post, @Ctx() { manager }: MyContext) {
+    const creator = await manager.findOneBy(User, { id: post.creatorId });
+    if (!creator) {
+      throw new Error('There was no creator attached to this post');
+    }
+    return creator;
+  }
+
+  @FieldResolver(() => String)
+  textSnippet(@Root() post: Post) {
+    return post.text?.slice(0, 200);
+  }
+
   @Query(() => [Post])
-  async posts(@Ctx() { manager }: MyContext): Promise<Post[]> {
+  async posts(
+    @Arg('take', () => Int) take: number,
+    @Arg('skip', () => Int) skip: number,
+    @Ctx() { manager }: MyContext
+  ): Promise<Post[]> {
+    const realTake = Math.min(50, take);
     return await manager
       .createQueryBuilder(Post, 'post')
       .orderBy('post.createdAt', 'DESC')
+      .take(realTake)
+      .skip(skip)
       .getMany();
   }
 

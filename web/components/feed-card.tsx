@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 
-import { StarIcon, CircleIcon } from 'lucide-react';
+import { StarIcon, BadgeCheck } from 'lucide-react';
 import {
   Card,
   CardHeader,
@@ -13,7 +13,12 @@ import {
 import { usePostsQuery } from '@/lib/graphql/generated/graphql';
 
 export function FeedCard() {
-  const { data } = usePostsQuery();
+  const { data } = usePostsQuery({
+    variables: {
+      skip: 0,
+      take: 10,
+    },
+  });
   return (
     <section className='my-5 flex flex-col gap-5'>
       {data?.posts.length &&
@@ -22,11 +27,11 @@ export function FeedCard() {
             <CardHeader className='grid grid-cols-[1fr_110px] items-start gap-4 space-y-0'>
               <div className='space-y-1'>
                 <div className='flex items-center mb-4'>
-                  {post.creatorId}
-                  <CircleIcon className='ml-1.5 h-3 w-3 fill-sky-400 text-sky-400' />
+                  {post.postCreator.username}
+                  <BadgeCheck className='ml-1.5 h-5 w-5 fill-primary text-background' />
                 </div>
                 <CardTitle>{post.title}</CardTitle>
-                <CardDescription>{post.text}</CardDescription>
+                <CardDescription>{post.textSnippet}</CardDescription>
               </div>
             </CardHeader>
             <CardContent>

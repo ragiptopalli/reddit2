@@ -1,10 +1,13 @@
-query Posts {
-  posts {
+query Posts($skip: Int!, $take: Int!) {
+  posts(skip: $skip, take: $take) {
     id
     title
-    text
+    textSnippet
     points
     creatorId
+    postCreator {
+      username
+    }
     createdAt
     updatedAt
   }

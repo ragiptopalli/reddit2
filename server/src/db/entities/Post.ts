@@ -14,7 +14,7 @@ import { User } from './User';
 export class Post {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  id: string;
 
   @Field()
   @Column()
@@ -37,9 +37,9 @@ export class Post {
 
   @Field()
   @CreateDateColumn()
-  createdAt!: Date;
+  createdAt: Date;
 
   @Field()
   @UpdateDateColumn()
-  updatedAt!: Date;
+  updatedAt: Date;
 }

@@ -23,6 +23,9 @@ const main = async () => {
   try {
     await pgDataSource.initialize();
 
+    // uncomment this to run the mock data migration
+    // await pgDataSource.runMigrations();
+
     const app = express();
 
     const httpServer = http.createServer(app);
