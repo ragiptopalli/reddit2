@@ -1,7 +1,6 @@
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -20,20 +19,24 @@ import {
 import { Input } from '@/components/ui/input';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { Button } from './ui/button';
+import { Alert, AlertTitle, AlertDescription } from './ui/alert';
+import { Loader2, Terminal } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-
 import {
   createPostSchema,
   type CreatePostSchemaType,
 } from '@/lib/formSchemaValidation/create-post-schema';
-import { Loader2, Terminal } from 'lucide-react';
+
 import { useState } from 'react';
-import { useCreatePostMutation } from '@/lib/graphql/generated/graphql';
-import { toast } from 'sonner';
+import {
+  PostsDocument,
+  PostsQuery,
+  useCreatePostMutation,
+} from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
-import { Alert, AlertTitle, AlertDescription } from './ui/alert';
 
 export const CreatePostModal = () => {
   const router = useRouter();
@@ -69,6 +72,20 @@ export const CreatePostModal = () => {
     await createPost({
       variables: {
         input: { ...values },
+      },
+      update: (cache, { data }) => {
+        const existingPosts = cache.readQuery<PostsQuery>({
+          query: PostsDocument,
+        });
+
+        if (existingPosts) {
+          cache.writeQuery({
+            query: PostsDocument,
+            data: {
+              posts: [data?.createPost, ...existingPosts.posts],
+            },
+          });
+        }
       },
     });
   };

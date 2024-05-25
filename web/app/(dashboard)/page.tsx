@@ -1,3 +1,9 @@
+import { FeedCard } from '@/components/feed-card';
+
 export default function Dashboard() {
-  return <h1>Dashboard</h1>;
+  return (
+    <div>
+      <FeedCard />
+    </div>
+  );
 }
