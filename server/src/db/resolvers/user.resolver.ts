@@ -1,6 +1,6 @@
 import { isQueryFailedError } from '../../../utils/pgQueryError';
 import { MyContext, UsernamePasswordInput } from '../../types';
-import { User } from '../entities/User';
+import { User } from '../entities';
 
 import {
   Arg,

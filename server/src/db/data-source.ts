@@ -2,8 +2,7 @@ import { config } from 'dotenv';
 
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Post } from './entities/Post';
-import { User } from './entities/User';
+import { Post, User } from './entities';
 import { stringToBoolean } from '../../utils/stringToBoolean';
 import path from 'path';
 config();

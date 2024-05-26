@@ -9,8 +9,7 @@ import { ApolloServer } from '@apollo/server';
 import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import { buildSchema } from 'type-graphql';
-import { PostResolver } from './db/resolvers/post';
-import { UserResolver } from './db/resolvers/user';
+import { PostResolver, UserResolver } from './db/resolvers';
 
 import RedisStore from 'connect-redis';
 import Redis from 'ioredis';

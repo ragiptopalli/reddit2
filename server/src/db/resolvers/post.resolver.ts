@@ -1,6 +1,5 @@
 import { MyContext } from 'src/types';
-import { Post } from '../entities/Post';
-import { User } from '../entities/User';
+import { User, Post } from '../entities';
 import {
   Arg,
   Ctx,
@@ -25,7 +24,7 @@ class PostInput {
   text: string;
 }
 
-@Resolver(() => Post)
+@Resolver((_of) => Post)
 export class PostResolver {
   @FieldResolver(() => User)
   async postCreator(@Root() post: Post, @Ctx() { manager }: MyContext) {

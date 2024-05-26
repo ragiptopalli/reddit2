@@ -7,14 +7,14 @@ import {
   UpdateDateColumn,
   OneToMany,
 } from 'typeorm';
-import { Post } from './Post';
+import { Post } from './post';
 
 @ObjectType()
 @Entity('users') // because 'user' is a reserved word in postgresql
 export class User {
   @Field()
   @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  readonly id!: string;
 
   @Field()
   @Column({ unique: true })
@@ -27,8 +27,8 @@ export class User {
   @Column()
   password!: string;
 
-  @OneToMany(() => Post, (post) => post.creator)
-  posts: Post[];
+  @OneToMany((_type) => Post, (post) => post.creator)
+  posts!: Post[];
 
   @Field()
   @CreateDateColumn()

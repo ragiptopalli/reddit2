@@ -340,9 +340,5 @@ export class PostsMockData1716636203437 implements MigrationInterface {
         `);
   }
 
-  public async down(queryRunner: QueryRunner): Promise<void> {
-    await queryRunner.query(` insert into post (title, text, "creatorId", "createdAt") values ('Film About a Woman Who...', 'Aliquam quis turpis eget elit sodales scelerisque. Mauris sit amet eros. Suspendisse accumsan tortor quis turpis.
-    
-    Sed ante. Vivamus tortor. Duis mattis egestas metus.', '34c30554-29ce-4e0d-a6f6-f71ed31e3df5', '2019-01-06T13:26:50Z');`);
-  }
+  public async down(_: QueryRunner): Promise<void> {}
 }

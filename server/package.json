@@ -36,6 +36,7 @@
     "pg": "^8.11.5",
     "pg-protocol": "^1.6.1",
     "reflect-metadata": "^0.2.2",
+    "tslib": "^2.6.2",
     "type-graphql": "^2.0.0-rc.1",
     "typeorm": "^0.3.20",
     "zod": "^3.23.8"
