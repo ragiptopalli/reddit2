@@ -8,7 +8,7 @@ interface CustomExpressSession extends Session {
   userId: string | undefined;
 }
 
-export type MyContext = {
+export type Context = {
   manager: EntityManager;
   req: Request & { session: CustomExpressSession };
   res: Response;

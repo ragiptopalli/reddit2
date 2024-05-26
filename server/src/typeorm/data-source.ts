@@ -7,7 +7,7 @@ import { stringToBoolean } from '../../utils/stringToBoolean';
 import path from 'path';
 config();
 
-const pgDataSource = new DataSource({
+const dataSource = new DataSource({
   type: process.env.DB_TYPE,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
@@ -20,4 +20,4 @@ const pgDataSource = new DataSource({
   migrations: [path.join(__dirname, './migrations/*')],
 });
 
-export default pgDataSource;
+export default dataSource;

@@ -1,5 +1,5 @@
 import { isQueryFailedError } from '../../../utils/pgQueryError';
-import { MyContext, UsernamePasswordInput } from '../../types';
+import { Context, UsernamePasswordInput } from '../../types';
 import { User } from '../entities';
 
 import {
@@ -41,7 +41,7 @@ class UserResponse {
 @Resolver()
 export class UserResolver {
   @Query(() => User, { nullable: true })
-  async me(@Ctx() { manager, req }: MyContext) {
+  async me(@Ctx() { manager, req }: Context) {
     const { userId } = req.session;
 
     if (!userId) {
@@ -59,7 +59,7 @@ export class UserResolver {
   async resetPassword(
     @Arg('token') token: string,
     @Arg('newPassword') newPassword: string,
-    @Ctx() { manager, redis, req }: MyContext
+    @Ctx() { manager, redis, req }: Context
   ): Promise<User> {
     if (newPassword.length < 3) {
       throw new Error('Password should be at least 3 characters long!');
@@ -99,7 +99,7 @@ export class UserResolver {
   @Mutation(() => Boolean)
   async forgetPassowrdLink(
     @Arg('email') email: string,
-    @Ctx() { manager, redis }: MyContext
+    @Ctx() { manager, redis }: Context
   ) {
     console.log(email);
     const user = await manager.findOne(User, {
@@ -130,7 +130,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { manager, req }: MyContext
+    @Ctx() { manager, req }: Context
   ): Promise<UserResponse> {
     const { username, password, email } = options;
 
@@ -178,7 +178,7 @@ export class UserResolver {
   async login(
     @Arg('usernameOrEmail') usernameOrEmail: string,
     @Arg('password') password: string,
-    @Ctx() { manager, req }: MyContext
+    @Ctx() { manager, req }: Context
   ): Promise<User> {
     const user = await manager.findOne(User, {
       where: !usernameOrEmail.includes('@')
@@ -202,7 +202,7 @@ export class UserResolver {
   }
 
   @Mutation(() => Boolean)
-  logout(@Ctx() { req, res }: MyContext): Promise<Boolean> {
+  logout(@Ctx() { req, res }: Context): Promise<Boolean> {
     return new Promise((resolve) =>
       req.session.destroy((err) => {
         res.clearCookie(COOKIE_NAME);
