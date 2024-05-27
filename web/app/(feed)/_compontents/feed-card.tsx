@@ -32,27 +32,12 @@ export function FeedCard() {
     },
   });
 
-  if (loading) {
-    return (
-      <>
-        {Array.from({ length: 10 }).map((_, idx) => (
-          <div className='flex flex-col space-y-3' key={`${idx}-loadingFeed`}>
-            <Skeleton className='h-[125px] w-[250px] rounded-xl' />
-            <div className='space-y-2'>
-              <Skeleton className='h-4 w-[250px]' />
-              <Skeleton className='h-4 w-[200px]' />
-            </div>
-          </div>
-        ))}
-      </>
-    );
-  }
-
   const loadMorePosts = () => {
     fetchMore({
       variables: {
         skip: offset,
       },
+
       updateQuery: (
         previousResult: PostsQuery,
         options: { fetchMoreResult: PostsQuery }
@@ -65,14 +50,28 @@ export function FeedCard() {
   };
 
   return (
-    <InfiniteScroll
-      initialLoad={false}
-      threshold={20}
-      hasMore={posts.length < postsCount}
-      loadMore={loadMorePosts}
-    >
-      {posts.length &&
-        posts.map((post) => <SinglePost key={post.id} post={post} />)}
-    </InfiniteScroll>
+    <>
+      {!loading && posts.length > 0 ? (
+        <InfiniteScroll
+          initialLoad={false}
+          threshold={10}
+          hasMore={posts.length < postsCount}
+          loadMore={loadMorePosts}
+          // loader={<Skeleton className='h-[125px] w-[250px] rounded-xl' />}
+        >
+          {!loading &&
+            posts.length > 0 &&
+            posts.map((post) => <SinglePost key={post.id} post={post} />)}
+        </InfiniteScroll>
+      ) : (
+        <>
+          {Array.from({ length: 5 }).map((_, idx) => (
+            <div className='flex flex-col my-5' key={`${idx}-loadingFeed`}>
+              <Skeleton className='h-[195px] w-[740px] rounded-xl' />
+            </div>
+          ))}
+        </>
+      )}
+    </>
   );
 }
