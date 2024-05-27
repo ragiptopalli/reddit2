@@ -30,6 +30,7 @@ export function FeedCard() {
       if (offset >= postsCount) return;
       setOffset((prev) => prev + 10);
     },
+    fetchPolicy: 'cache-and-network',
   });
 
   const loadMorePosts = () => {
@@ -37,7 +38,6 @@ export function FeedCard() {
       variables: {
         skip: offset,
       },
-
       updateQuery: (
         previousResult: PostsQuery,
         options: { fetchMoreResult: PostsQuery }
@@ -54,10 +54,9 @@ export function FeedCard() {
       {!loading && posts.length > 0 ? (
         <InfiniteScroll
           initialLoad={false}
-          threshold={10}
+          threshold={5}
           hasMore={posts.length < postsCount}
           loadMore={loadMorePosts}
-          // loader={<Skeleton className='h-[125px] w-[250px] rounded-xl' />}
         >
           {!loading &&
             posts.length > 0 &&

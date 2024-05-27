@@ -1,18 +1,13 @@
 'use client';
 
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from './theme-toggle';
 
 import Link from 'next/link';
 import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
 import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
 import { Button } from './ui/button';
-import {
-  MeDocument,
-  MeQuery,
-  useLogoutMutation,
-  useMeQuery,
-} from '@/lib/graphql/generated/graphql';
+import { useLogoutMutation, useMeQuery } from '@/lib/graphql/generated/graphql';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,32 +18,30 @@ import {
 } from './ui/dropdown-menu';
 import { CircleUser, Loader2 } from 'lucide-react';
 import { CreatePostModal } from './create-post-modal';
+import { toast } from 'sonner';
 
 export const Header = () => {
   const pathname = usePathname();
-
-  const [logout] = useLogoutMutation();
+  const router = useRouter();
+  const [logout, { client }] = useLogoutMutation({
+    onCompleted() {
+      toast.success('Logged out successfully, redirecting...', {
+        duration: 1500,
+        position: 'top-center',
+      });
+      router.push('/');
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
   const { data, loading } = useMeQuery();
 
   if (loading) return <Loader2 className='mt-2 h-4 w-4 animate-spin' />;
 
-  const handleLogout = () => {
-    logout({
-      update(cache, { data }) {
-        const existing = cache.readQuery<MeQuery>({
-          query: MeDocument,
-        });
-
-        if (!existing || !data?.logout) return;
-
-        cache.writeQuery<MeQuery>({
-          query: MeDocument,
-          data: {
-            me: null,
-          },
-        });
-      },
-    });
+  const handleLogout = async () => {
+    await logout();
+    await client.resetStore();
   };
 
   return (
@@ -163,7 +156,7 @@ const UserMenu = ({
   onHandleLogout,
   username,
 }: {
-  onHandleLogout: () => void;
+  onHandleLogout: () => Promise<void>;
   username: string;
 }) => {
   return (

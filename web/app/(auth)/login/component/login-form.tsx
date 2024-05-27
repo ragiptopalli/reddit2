@@ -31,7 +31,7 @@ export const LoginForm = () => {
   const [login, { loading }] = useLoginMutation({
     onCompleted() {
       toast.success('Logged in successfully, redirecting...', {
-        duration: 2000,
+        duration: 1500,
         position: 'top-center',
       });
       router.push('/');
