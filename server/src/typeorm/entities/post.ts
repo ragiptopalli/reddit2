@@ -51,7 +51,10 @@ export class Post {
   @OneToMany((_type) => Updoot, (updoot) => updoot.post)
   updoots!: Updoot[];
 
-  @Field((_type) => VoteStatus, { defaultValue: VoteStatus.NONE })
+  @Field((_type) => VoteStatus, {
+    defaultValue: VoteStatus.NONE,
+    nullable: true,
+  })
   voteStatus: VoteStatus;
 
   @Field()
