@@ -8,7 +8,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Post } from './post';
-
+import { Updoot } from './updoot';
 @ObjectType()
 @Entity('users') // because 'user' is a reserved word in postgresql
 export class User {
@@ -29,6 +29,9 @@ export class User {
 
   @OneToMany((_type) => Post, (post) => post.creator)
   posts!: Post[];
+
+  @OneToMany((_type) => Updoot, (updoot) => updoot.user)
+  updoots!: Updoot[];
 
   @Field()
   @CreateDateColumn()

@@ -2,7 +2,7 @@ import { config } from 'dotenv';
 
 import 'reflect-metadata';
 import { DataSource } from 'typeorm';
-import { Post, User } from './entities';
+import { Post, Updoot, User } from './entities';
 import { stringToBoolean } from '../../utils/stringToBoolean';
 import path from 'path';
 config();
@@ -16,7 +16,7 @@ const dataSource = new DataSource({
   database: process.env.DB_NAME,
   synchronize: stringToBoolean(process.env.DB_SYNCHRONIZE),
   logging: stringToBoolean(process.env.DB_LOGGING),
-  entities: [Post, User],
+  entities: [Post, User, Updoot],
   migrations: [path.join(__dirname, './migrations/*')],
 });
 

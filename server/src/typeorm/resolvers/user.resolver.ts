@@ -1,5 +1,4 @@
-import { isQueryFailedError } from '../../../utils/pgQueryError';
-import { Context, UsernamePasswordInput } from '../../types';
+import { type Context, UsernamePasswordInput } from '../../types';
 import { User } from '../entities';
 
 import {
@@ -16,6 +15,7 @@ import bcrypt from 'bcrypt';
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../../constants';
 import { validateRegister } from '../../../utils/validateRegister';
 import { sendEmail } from '../../../utils/sendEmail';
+import { isQueryFailedError } from './types/queryError';
 
 const SALT_ROUNDS = 12;
 const EXPIRY_IN_SECONDS = 3600; // 1 hour

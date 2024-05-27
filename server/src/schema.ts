@@ -1,7 +1,11 @@
 import { buildSchema } from 'type-graphql';
-import { PostResolver, UserResolver } from './typeorm/resolvers';
+import {
+  PostResolver,
+  UserResolver,
+  UpdootResolver,
+} from './typeorm/resolvers';
 
 export const createSchema = buildSchema({
-  resolvers: [PostResolver, UserResolver],
+  resolvers: [PostResolver, UserResolver, UpdootResolver],
   validate: false,
 });

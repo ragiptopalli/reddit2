@@ -1,4 +1,4 @@
-import { Context } from 'src/types';
+import { type Context } from 'src/types';
 import { User, Post } from '../entities';
 import {
   Arg,
