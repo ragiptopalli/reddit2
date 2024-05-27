@@ -1,5 +1,5 @@
-import { type Context } from 'src/types';
-import { User, Post } from '../entities';
+import type { Context } from 'src/types';
+import { User, Post, VoteStatus, Updoot } from '../entities';
 import {
   Arg,
   Ctx,
@@ -11,25 +11,65 @@ import {
   Root,
   UseMiddleware,
 } from 'type-graphql';
-import { QueryFailedError } from 'typeorm';
+import { In, QueryFailedError } from 'typeorm';
 import { isAuth } from '../middleware/isAuth';
 import { PostInput } from './types';
 
 @Resolver((_of) => Post)
 export class PostResolver {
-  @Query((_return) => [Post])
+  @Query((_returns) => [Post])
   async posts(
     @Arg('take', () => Int) take: number,
     @Arg('skip', () => Int) skip: number,
-    @Ctx() { manager }: Context
+    @Ctx() { manager, req }: Context
   ): Promise<Post[]> {
+    const { userId } = req.session;
+
     const realTake = Math.min(50, take);
-    return await manager
+
+    const posts = await manager
       .createQueryBuilder(Post, 'post')
+      .leftJoinAndSelect('post.updoots', 'updoots')
       .orderBy('post.createdAt', 'DESC')
       .take(realTake)
       .skip(skip)
       .getMany();
+
+    if (!userId) {
+      return posts.map((post) => {
+        post.voteStatus = VoteStatus.NONE;
+        return post;
+      });
+    }
+
+    const postIds = posts.map((post) => post.id);
+
+    const updoots = await manager.find(Updoot, {
+      where: { userId, postId: In(postIds) },
+    });
+
+    console.log(updoots, 'UPDOOTS JASHTT MAP-ITTT');
+
+    const updootMap: Record<string, Updoot> = {};
+    updoots.forEach((updoot) => {
+      updootMap[updoot.postId] = updoot;
+    });
+
+    return posts.map((post) => {
+      const updoot = updootMap[post.id];
+      console.log(updoot, 'UPDOOT MRENDA MAPIT');
+      if (updoot) {
+        post.voteStatus =
+          updoot.value === 1
+            ? VoteStatus.UP
+            : updoot.value === -1
+            ? VoteStatus.DOWN
+            : VoteStatus.NONE;
+      } else {
+        post.voteStatus = VoteStatus.NONE;
+      }
+      return post;
+    });
   }
 
   @Query((_returns) => Int)

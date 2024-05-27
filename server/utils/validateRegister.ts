@@ -1,4 +1,4 @@
-import { UsernamePasswordInput } from 'src/types';
+import { UsernamePasswordInput } from '../src/typeorm/resolvers/types/';
 
 export const validateRegister = (options: UsernamePasswordInput) => {
   if (!options.email.includes('@')) {

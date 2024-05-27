@@ -1,4 +1,4 @@
-import { Field, Int, ObjectType } from 'type-graphql';
+import { Field, Int, ObjectType, registerEnumType } from 'type-graphql';
 import {
   Entity,
   PrimaryGeneratedColumn,
@@ -10,6 +10,17 @@ import {
 } from 'typeorm';
 import { User } from './user';
 import { Updoot } from './updoot';
+
+export enum VoteStatus {
+  UP = 'UP',
+  DOWN = 'DOWN',
+  NONE = 'NONE',
+}
+
+registerEnumType(VoteStatus, {
+  name: 'VoteStatus',
+  description: 'voting options',
+});
 
 @ObjectType()
 @Entity()
@@ -26,7 +37,7 @@ export class Post {
   @Column({ nullable: true })
   text?: string;
 
-  @Field((_type) => Int, { nullable: true })
+  @Field((_type) => Int)
   @Column({ type: 'int', default: 0 })
   points: number;
 
@@ -39,6 +50,9 @@ export class Post {
 
   @OneToMany((_type) => Updoot, (updoot) => updoot.post)
   updoots!: Updoot[];
+
+  @Field((_type) => VoteStatus, { defaultValue: VoteStatus.NONE })
+  voteStatus: VoteStatus;
 
   @Field()
   @CreateDateColumn()

@@ -1,10 +1,11 @@
-import { Field, InputType, Int } from 'type-graphql';
+import { VoteStatus } from '../../entities';
+import { Field, InputType } from 'type-graphql';
 
 @InputType()
 export class UpdootInput {
   @Field()
   postId: string;
 
-  @Field((_of) => Int)
-  value: number;
+  @Field((_type) => VoteStatus)
+  status: VoteStatus;
 }

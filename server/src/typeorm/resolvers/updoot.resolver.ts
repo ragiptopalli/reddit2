@@ -1,7 +1,7 @@
-import { type Context } from 'src/types';
+import type { Context } from 'src/types';
 import { Arg, Ctx, Mutation, Resolver, UseMiddleware } from 'type-graphql';
 import { isAuth } from '../middleware/isAuth';
-import { Post, Updoot } from '../entities';
+import { Post, Updoot, VoteStatus } from '../entities';
 import { UpdootInput } from './types/updoot.input';
 
 @Resolver()
@@ -13,45 +13,38 @@ export class UpdootResolver {
     @Ctx() { req, manager }: Context
   ): Promise<Boolean> {
     const { userId } = req.session;
-    const { value, postId } = input;
+    const { status, postId } = input;
 
-    if (![1, -1].includes(value)) {
-      throw new Error('Invalid vote value');
-    }
+    const post = await manager.findOneBy(Post, { id: postId });
+    if (!post) throw new Error('Post not found!');
 
     const updoot = await manager.findOneBy(Updoot, { postId, userId });
 
-    if (updoot && updoot.value !== value) {
-      await manager.transaction(async (tem) => {
-        const post = await tem.findOneBy(Post, { id: postId });
-        if (!post) throw new Error('Post not found!');
+    const valueMap = {
+      [VoteStatus.UP]: 1,
+      [VoteStatus.DOWN]: -1,
+      [VoteStatus.NONE]: 0,
+    };
 
-        updoot.value = value;
+    const newValue = valueMap[status];
 
-        await tem.save(updoot);
-
-        post.points = post.points + 2 * value;
-
-        await tem.save(post);
-      });
+    if (updoot) {
+      console.log(updoot, 'UPDOOT');
+      console.log(newValue, 'NEW VALUE');
+      if (updoot.value === newValue) {
+        await manager.update(Updoot, { postId, userId }, { value: 0 });
+        post.voteStatus = VoteStatus.NONE;
+      } else {
+        await manager.update(Updoot, { postId, userId }, { value: newValue });
+        post.voteStatus = status;
+      }
     } else {
-      manager.transaction(async (tem) => {
-        const post = await tem.findOneBy(Post, { id: postId });
-        if (!post) throw new Error('Post not found!');
-
-        const newUpdoot = tem.create(Updoot, {
-          userId,
-          postId,
-          value,
-        });
-
-        await tem.save(newUpdoot);
-
-        post.points = post.points + value;
-
-        await tem.save(post);
-      });
+      await manager.insert(Updoot, { postId, userId, value: newValue });
+      post.voteStatus = status;
     }
+
+    post.points = (await manager.sum(Updoot, 'value', { postId })) ?? 0;
+    await manager.save(post);
 
     return true;
   }

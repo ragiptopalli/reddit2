@@ -1,4 +1,4 @@
-import { type Context, UsernamePasswordInput } from '../../types';
+import type { Context } from '../../types';
 import { User } from '../entities';
 
 import {
@@ -16,6 +16,7 @@ import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../../constants';
 import { validateRegister } from '../../../utils/validateRegister';
 import { sendEmail } from '../../../utils/sendEmail';
 import { isQueryFailedError } from './types/queryError';
+import { UsernamePasswordInput } from './types/user.input';
 
 const SALT_ROUNDS = 12;
 const EXPIRY_IN_SECONDS = 3600; // 1 hour

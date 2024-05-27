@@ -32,6 +32,7 @@ export interface Mutation {
   register: UserResponse;
   resetPassword: User;
   updatePost?: Maybe<Post>;
+  vote: Scalars['Boolean']['output'];
 }
 
 
@@ -73,16 +74,22 @@ export interface MutationUpdatePostArgs {
   title: Scalars['String']['input'];
 }
 
+
+export interface MutationVoteArgs {
+  input: UpdootInput;
+}
+
 export interface Post {
   createdAt: Scalars['DateTimeISO']['output'];
   creatorId: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  points?: Maybe<Scalars['Float']['output']>;
+  points: Scalars['Int']['output'];
   postCreator: User;
   text?: Maybe<Scalars['String']['output']>;
   textSnippet: Scalars['String']['output'];
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
+  voteStatus: VoteStatus;
 }
 
 export interface PostInput {
@@ -108,6 +115,11 @@ export interface QueryPostsArgs {
   take: Scalars['Int']['input'];
 }
 
+export interface UpdootInput {
+  postId: Scalars['String']['input'];
+  status: VoteStatus;
+}
+
 export interface User {
   createdAt: Scalars['DateTimeISO']['output'];
   email: Scalars['String']['output'];
@@ -127,6 +139,15 @@ export interface UsernamePasswordInput {
   username: Scalars['String']['input'];
 }
 
+/** Basic voting options */
+export enum VoteStatus {
+  Down = 'DOWN',
+  None = 'NONE',
+  Up = 'UP'
+}
+
+export type PostSnippetFragment = { id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } };
+
 export type UserFragmentFragment = { id: string, username: string, email: string };
 
 export type CreatePostMutationVariables = Exact<{
@@ -134,7 +155,14 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points?: number | null, creatorId: string, createdAt: any, updatedAt: any } };
+export type CreatePostMutation = { createPost: { id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } };
+
+export type VoteMutationVariables = Exact<{
+  input: UpdootInput;
+}>;
+
+
+export type VoteMutation = { vote: boolean };
 
 export type ForgetPasswordMutationVariables = Exact<{
   email: Scalars['String']['input'];
@@ -182,13 +210,29 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { posts: Array<{ id: string, title: string, textSnippet: string, points?: number | null, creatorId: string, createdAt: any, updatedAt: any, postCreator: { username: string } }> };
+export type PostsQuery = { posts: Array<{ id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } }> };
 
 export type PostsCountQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type PostsCountQuery = { postsCount: number };
 
+export const PostSnippetFragmentDoc = gql`
+    fragment PostSnippet on Post {
+  id
+  title
+  textSnippet
+  points
+  creatorId
+  voteStatus
+  postCreator {
+    id
+    username
+  }
+  createdAt
+  updatedAt
+}
+    `;
 export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
   id
@@ -199,16 +243,10 @@ export const UserFragmentFragmentDoc = gql`
 export const CreatePostDocument = gql`
     mutation CreatePost($input: PostInput!) {
   createPost(input: $input) {
-    id
-    title
-    text
-    points
-    creatorId
-    createdAt
-    updatedAt
+    ...PostSnippet
   }
 }
-    `;
+    ${PostSnippetFragmentDoc}`;
 export type CreatePostMutationFn = Apollo.MutationFunction<CreatePostMutation, CreatePostMutationVariables>;
 
 /**
@@ -234,6 +272,36 @@ export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<C
       }
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export const VoteDocument = gql`
+    mutation Vote($input: UpdootInput!) {
+  vote(input: $input)
+}
+    `;
+export type VoteMutationFn = Apollo.MutationFunction<VoteMutation, VoteMutationVariables>;
+
+/**
+ * __useVoteMutation__
+ *
+ * To run a mutation, you first call `useVoteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useVoteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [voteMutation, { data, loading, error }] = useVoteMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useVoteMutation(baseOptions?: Apollo.MutationHookOptions<VoteMutation, VoteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<VoteMutation, VoteMutationVariables>(VoteDocument, options);
+      }
+export type VoteMutationHookResult = ReturnType<typeof useVoteMutation>;
+export type VoteMutationResult = Apollo.MutationResult<VoteMutation>;
 export const ForgetPasswordDocument = gql`
     mutation ForgetPassword($email: String!) {
   forgetPassowrdLink(email: $email)
@@ -439,19 +507,10 @@ export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
 export const PostsDocument = gql`
     query Posts($skip: Int!, $take: Int!) {
   posts(skip: $skip, take: $take) {
-    id
-    title
-    textSnippet
-    points
-    creatorId
-    postCreator {
-      username
-    }
-    createdAt
-    updatedAt
+    ...PostSnippet
   }
 }
-    `;
+    ${PostSnippetFragmentDoc}`;
 
 /**
  * __usePostsQuery__

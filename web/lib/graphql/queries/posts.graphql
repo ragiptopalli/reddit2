@@ -1,15 +1,6 @@
 query Posts($skip: Int!, $take: Int!) {
   posts(skip: $skip, take: $take) {
-    id
-    title
-    textSnippet
-    points
-    creatorId
-    postCreator {
-      username
-    }
-    createdAt
-    updatedAt
+    ...PostSnippet
   }
 }
 
