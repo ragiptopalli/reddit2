@@ -102,7 +102,6 @@ export class UserResolver {
     @Arg('email') email: string,
     @Ctx() { manager, redis }: Context
   ) {
-    console.log(email);
     const user = await manager.findOne(User, {
       where: { email },
     });
@@ -208,9 +207,8 @@ export class UserResolver {
       req.session.destroy((err) => {
         res.clearCookie(COOKIE_NAME);
         if (err) {
-          console.log(err);
           resolve(false);
-          return;
+          throw new Error('Something went wrong');
         }
         resolve(true);
       })

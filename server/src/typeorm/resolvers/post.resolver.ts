@@ -48,8 +48,6 @@ export class PostResolver {
       where: { userId, postId: In(postIds) },
     });
 
-    console.log(updoots, 'UPDOOTS JASHTT MAP-ITTT');
-
     const updootMap: Record<string, Updoot> = {};
     updoots.forEach((updoot) => {
       updootMap[updoot.postId] = updoot;
@@ -57,7 +55,6 @@ export class PostResolver {
 
     return posts.map((post) => {
       const updoot = updootMap[post.id];
-      console.log(updoot, 'UPDOOT MRENDA MAPIT');
       if (updoot) {
         post.voteStatus =
           updoot.value === 1

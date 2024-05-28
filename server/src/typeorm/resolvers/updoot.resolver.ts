@@ -29,8 +29,6 @@ export class UpdootResolver {
     const newValue = valueMap[status];
 
     if (updoot) {
-      console.log(updoot, 'UPDOOT');
-      console.log(newValue, 'NEW VALUE');
       if (updoot.value === newValue) {
         await manager.update(Updoot, { postId, userId }, { value: 0 });
         post.voteStatus = VoteStatus.NONE;
