@@ -16,10 +16,8 @@ import { Input } from '@/components/ui/input';
 
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
-import {
-  type ForgotPasswordSchemaType,
-  forgotPasswordSchema,
-} from '@/lib/formSchemaValidation/forgot-password.schema';
+import { forgotPasswordSchema } from '@/lib/validation';
+import type { ForgotPasswordSchemaType } from '@/lib/validation';
 import { useForgetPasswordMutation } from '@/lib/graphql/generated/graphql';
 
 export const ForgotPasswordForm = () => {

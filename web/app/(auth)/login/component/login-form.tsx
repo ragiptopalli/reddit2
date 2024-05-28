@@ -1,7 +1,7 @@
 'use client';
 
-import { loginSchema } from '@/lib/formSchemaValidation/login.schema';
-import type { LoginSchemaType } from '@/lib/formSchemaValidation/login.schema';
+import { loginSchema } from '@/lib/validation';
+import type { LoginSchemaType } from '@/lib/validation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 

@@ -1,7 +1,7 @@
 import { type ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
-import type { RegisterSchemaType } from './formSchemaValidation/register.schema';
+import type { RegisterSchemaType } from './validation/auth';
 import type { FieldError } from './graphql/generated/graphql';
 import { UseFormSetError } from 'react-hook-form';
 

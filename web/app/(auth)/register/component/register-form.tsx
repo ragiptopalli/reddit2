@@ -1,9 +1,7 @@
 'use client';
 
-import {
-  registerSchema,
-  type RegisterSchemaType,
-} from '@/lib/formSchemaValidation/register.schema';
+import type { RegisterSchemaType } from '@/lib/validation';
+import { registerSchema } from '@/lib/validation/';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 

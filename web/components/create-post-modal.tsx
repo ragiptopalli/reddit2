@@ -25,10 +25,8 @@ import { toast } from 'sonner';
 
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import {
-  createPostSchema,
-  type CreatePostSchemaType,
-} from '@/lib/formSchemaValidation/create-post-schema';
+import { createPostSchema } from '@/lib/validation';
+import type { CreatePostSchemaType } from '@/lib/validation';
 
 import { useState } from 'react';
 import {

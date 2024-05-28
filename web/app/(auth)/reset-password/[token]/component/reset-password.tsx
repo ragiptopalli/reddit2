@@ -13,10 +13,8 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  resetPasswordSchema,
-  type ResetPasswordSchemaType,
-} from '@/lib/formSchemaValidation/reset-password.schema';
+import { resetPasswordSchema } from '@/lib/validation';
+import type { ResetPasswordSchemaType } from '@/lib/validation';
 import {
   MeDocument,
   MeQuery,
