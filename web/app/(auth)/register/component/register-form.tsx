@@ -21,6 +21,7 @@ import { useRegisterUserMutation } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
 import { toErrorMap } from '@/lib/utils';
 import { Loader2 } from 'lucide-react';
+import { PasswordField } from '@/components/ui/password-input';
 
 export const RegisterForm = () => {
   const router = useRouter();
@@ -86,22 +87,8 @@ export const RegisterForm = () => {
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type='password' {...field} />
-              </FormControl>
-              <FormDescription>
-                Please choose a strong password!.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <PasswordField description='Please choose a strong password!' />
+
         <Button disabled={loading} type='submit' className='w-full'>
           {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
           Register

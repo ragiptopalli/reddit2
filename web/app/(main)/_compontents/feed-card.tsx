@@ -53,6 +53,7 @@ export function FeedCard() {
     <>
       {!loading && posts.length > 0 ? (
         <InfiniteScroll
+          className='flex flex-col space-y-4 w-full max-w-screen-xl justify-between'
           initialLoad={false}
           threshold={5}
           hasMore={posts.length < postsCount}
@@ -64,11 +65,9 @@ export function FeedCard() {
         </InfiniteScroll>
       ) : (
         <>
-          {Array.from({ length: 5 }).map((_, idx) => (
-            <div className='flex flex-col my-5' key={`${idx}-loadingFeed`}>
-              <Skeleton className='h-[195px] w-[740px] rounded-xl' />
-            </div>
-          ))}
+          <div className='flex flex-col space-y-4 w-full max-w-screen-xl justify-between'>
+            <Skeleton className='h-[195px] w-[740px] rounded-xl' />
+          </div>
         </>
       )}
     </>

@@ -24,6 +24,7 @@ import {
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { Loader2 } from 'lucide-react';
+import { PasswordField } from '@/components/ui/password-input';
 
 export const LoginForm = () => {
   const router = useRouter();
@@ -82,25 +83,18 @@ export const LoginForm = () => {
             <FormItem>
               <FormLabel>Username or Email</FormLabel>
               <FormControl>
-                <Input type='text' {...field} />
+                <Input
+                  autoFocus
+                  type='text'
+                  {...field}
+                  placeholder='john@doe.com or john'
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name='password'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type='password' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <PasswordField label='Password' />
         <Button disabled={loading} type='submit' className='w-full'>
           {loading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />} Log In
         </Button>

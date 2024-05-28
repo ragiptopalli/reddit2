@@ -10,7 +10,7 @@ export default function FeedLayout({
   return (
     <Container>
       <Header />
-      <main>{children}</main>
+      <main className='w-full'>{children}</main>
       <Footer />
     </Container>
   );

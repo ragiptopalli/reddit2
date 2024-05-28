@@ -4,13 +4,7 @@ const Container = ({
   children: React.ReactNode;
 }>) => {
   return (
-    <div
-      className={
-        'min-h-screen mx-auto flex flex-col items-center justify-between'
-      }
-    >
-      {children}
-    </div>
+    <div className={'min-h-screen flex flex-col items-center'}>{children}</div>
   );
 };
 

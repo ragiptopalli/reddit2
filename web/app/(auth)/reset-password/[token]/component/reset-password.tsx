@@ -4,15 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+import { Form } from '@/components/ui/form';
 import { resetPasswordSchema } from '@/lib/validation';
 import type { ResetPasswordSchemaType } from '@/lib/validation';
 import {
@@ -25,6 +17,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useState } from 'react';
 import { ApolloError } from '@apollo/client';
+import { PasswordField } from '@/components/ui/password-input';
 
 export const ResetPasswordForm = ({ token }: { token: string }) => {
   const router = useRouter();
@@ -77,19 +70,7 @@ export const ResetPasswordForm = ({ token }: { token: string }) => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='newPassword'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input type='password' placeholder='*********' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <PasswordField label='New Password' />
         <Button type='submit' className='w-full'>
           Submit
         </Button>

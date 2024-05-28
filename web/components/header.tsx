@@ -16,6 +16,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
+
 import { CircleUser, Loader2 } from 'lucide-react';
 import { CreatePostModal } from './create-post-modal';
 import { toast } from 'sonner';
@@ -45,80 +46,27 @@ export const Header = () => {
   };
 
   return (
-    <header className='h-16 gap-4 flex w-full sticky top-0 bg-background items-center justify-between border-b border-border/40 px-4 md:px-6'>
-      <nav className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
-        <Link
-          href='/'
-          className='flex items-center gap-2 text-lg font-semibold md:text-base'
-        >
-          <RocketIcon className='h-6 w-6' />
-          <span className='sr-only'>Reddit</span>
-        </Link>
-        <Link
-          href='/about'
-          className={`${
-            pathname === '/about' ? 'text-foreground' : 'text-muted-foreground'
-          } transition-colors hover:text-foreground`}
-        >
-          About
-        </Link>
-      </nav>
-      <Sheet>
-        <SheetTrigger asChild>
-          <Button variant='outline' size='icon' className='shrink-0 md:hidden'>
-            <HamburgerMenuIcon className='h-5 w-5' />
-            <span className='sr-only'>Toggle navigation menu</span>
-          </Button>
-        </SheetTrigger>
-        <SheetContent side='left'>
-          <nav className='grid gap-6 text-lg font-medium'>
-            <Link
-              href='/'
-              className='flex items-center gap-2 text-lg font-semibold'
-            >
-              <RocketIcon className='h-6 w-6' />
-              <span className='sr-only'>Reddit</span>
-            </Link>
-            <Link
-              href='/about'
-              className={`${
-                pathname === '/about'
-                  ? 'text-foreground'
-                  : 'text-muted-foreground'
-              }  hover:text-foreground`}
-            >
-              About
-            </Link>
-            {!data?.me && (
-              <>
-                <Link
-                  href='/login'
-                  className={`${
-                    pathname === '/login'
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  }  hover:text-foreground`}
-                >
-                  Login
-                </Link>
-                <Link
-                  href='/register'
-                  className={`${
-                    pathname === '/register'
-                      ? 'text-foreground'
-                      : 'text-muted-foreground'
-                  }  hover:text-foreground`}
-                >
-                  Register
-                </Link>
-              </>
-            )}
-          </nav>
-        </SheetContent>
-      </Sheet>
-      {!data?.me ? (
-        <div className='hidden flex-col gap-6 text-lg font-medium md:flex md:flex-row md:items-center md:gap-5 md:text-sm lg:gap-6'>
-          <div className='flex w-full items-center gap-4 md:ml-auto md:gap-2 lg:gap-4'>
+    <header className='sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60'>
+      <div className='container flex h-14 max-w-screen-xl items-center'>
+        <nav className='hidden md:flex space-x-2'>
+          <Link href='/' className='text-xl font-semibold md:text-base'>
+            <RocketIcon className='h-6 w-6' />
+            <span className='sr-only'>Reddit</span>
+          </Link>
+          <Link
+            href='/about'
+            className={`${
+              pathname === '/about'
+                ? 'text-foreground'
+                : 'text-muted-foreground'
+            } transition-colors hover:text-foreground`}
+          >
+            About
+          </Link>
+        </nav>
+        <MobileNav pathname={pathname} />
+        {!data?.me ? (
+          <div className='flex flex-1 items-center space-x-4 justify-end'>
             <Link
               href='/login'
               className={`${
@@ -139,15 +87,18 @@ export const Header = () => {
             >
               Register
             </Link>
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
-        </div>
-      ) : (
-        <div className='flex items-center gap-2'>
-          <CreatePostModal />
-          <UserMenu username={data.me.username} onHandleLogout={handleLogout} />
-        </div>
-      )}
+        ) : (
+          <div className='flex flex-1 items-center justify-between space-x-2 md:justify-end'>
+            <CreatePostModal />
+            <UserMenu
+              username={data.me.username}
+              onHandleLogout={handleLogout}
+            />
+          </div>
+        )}
+      </div>
     </header>
   );
 };
@@ -180,5 +131,39 @@ const UserMenu = ({
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+  );
+};
+
+const MobileNav = ({ pathname }: { pathname: string }) => {
+  return (
+    <Sheet>
+      <SheetTrigger asChild>
+        <Button variant='outline' size='icon' className='shrink-0 md:hidden'>
+          <HamburgerMenuIcon className='h-5 w-5' />
+          <span className='sr-only'>Toggle navigation menu</span>
+        </Button>
+      </SheetTrigger>
+      <SheetContent side='left'>
+        <nav className='grid gap-6 text-lg font-medium'>
+          <Link
+            href='/'
+            className='flex items-center gap-2 text-lg font-semibold'
+          >
+            <RocketIcon className='h-6 w-6' />
+            <span className='sr-only'>Reddit</span>
+          </Link>
+          <Link
+            href='/about'
+            className={`${
+              pathname === '/about'
+                ? 'text-foreground'
+                : 'text-muted-foreground'
+            }  hover:text-foreground`}
+          >
+            About
+          </Link>
+        </nav>
+      </SheetContent>
+    </Sheet>
   );
 };

@@ -5,9 +5,11 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
+import { getCustomTimeFormat } from '@/lib/getCustomTimeFormat';
 import {
   useVoteMutation,
   type PostsQuery,
@@ -15,8 +17,8 @@ import {
   PostSnippetFragment,
 } from '@/lib/graphql/generated/graphql';
 import { gql } from '@apollo/client';
-import { formatDistanceToNow } from 'date-fns';
-import { BadgeCheck, ChevronDown, ChevronUp, Loader2 } from 'lucide-react';
+import { BadgeCheck, ChevronDown, ChevronUp, Dot, Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 type PartialPostFragment = Partial<Pick<PostSnippetFragment, 'id'>> &
   Pick<PostSnippetFragment, 'voteStatus' | 'points'>;
@@ -103,19 +105,29 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
   };
 
   return (
-    <section className='my-5 flex flex-col gap-5'>
-      <Card className='w-[740px]'>
-        <CardHeader className='grid grid-cols-[1fr_110px] items-start gap-4 space-y-0'>
-          <div className='space-y-1'>
-            <div className='flex items-center mb-4'>
-              {post.postCreator.username}
-              <BadgeCheck className='ml-1.5 h-5 w-5 fill-primary text-background' />
-            </div>
-            <CardTitle>{post.title}</CardTitle>
-            <CardDescription>{post.textSnippet}</CardDescription>
+    <section className='w-full'>
+      <Card>
+        <CardHeader>
+          <div className='space-x-2 flex items-center'>
+            <Link href={`/u/${post.postCreator.username}`}>
+              <div className='flex items-center '>
+                <span>{post.postCreator.username}</span>
+                <BadgeCheck className='ml-1.5 h-5 w-5 fill-primary text-background' />
+              </div>
+            </Link>
+            <Dot className='h-3 w-3 fill-primary' />
+            <Link href={`/u/${post.postCreator.username}`}>
+              <div className='hover:underline'>
+                {getCustomTimeFormat(new Date(post.createdAt))}
+              </div>
+            </Link>
           </div>
         </CardHeader>
         <CardContent>
+          <CardTitle>{post.title}</CardTitle>
+          <CardDescription>{post.textSnippet}</CardDescription>
+        </CardContent>
+        <CardFooter>
           <div className='flex space-x-4 text-sm text-muted-foreground'>
             <div className='flex items-center'>
               <Button
@@ -125,7 +137,6 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
                 variant={
                   post.voteStatus === VoteStatus.Up ? 'default' : 'outline'
                 }
-                size='sm'
                 disabled={loading}
               >
                 {loading ? (
@@ -144,7 +155,6 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
                     ? 'destructive'
                     : 'outline'
                 }
-                size='sm'
                 disabled={loading}
               >
                 {loading ? (
@@ -154,13 +164,8 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
                 )}
               </Button>
             </div>
-            <div>
-              {formatDistanceToNow(new Date(post.createdAt), {
-                addSuffix: true,
-              })}
-            </div>
           </div>
-        </CardContent>
+        </CardFooter>
       </Card>
     </section>
   );
