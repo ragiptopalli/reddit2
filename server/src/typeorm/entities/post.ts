@@ -53,7 +53,6 @@ export class Post {
 
   @Field((_type) => VoteStatus, {
     defaultValue: VoteStatus.NONE,
-    nullable: true,
   })
   voteStatus: VoteStatus;
 

@@ -118,7 +118,7 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
         <Separator className='w-[95%] mx-auto' />
         <CardContent className='py-4 px-2'>
           <CardTitle>{post.title}</CardTitle>
-          <CardDescription>{post.textSnippet}</CardDescription>
+          <CardDescription>{post.text}</CardDescription>
         </CardContent>
         <Separator className='w-[95%] mx-auto' />
         <CardFooter className='p-2'>
