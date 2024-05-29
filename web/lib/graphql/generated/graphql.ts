@@ -86,7 +86,7 @@ export interface Post {
   points: Scalars['Int']['output'];
   postCreator: User;
   text?: Maybe<Scalars['String']['output']>;
-  textSnippet: Scalars['String']['output'];
+  textSnippet?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
   updatedAt: Scalars['DateTimeISO']['output'];
   voteStatus: VoteStatus;
@@ -139,14 +139,14 @@ export interface UsernamePasswordInput {
   username: Scalars['String']['input'];
 }
 
-/** Basic voting options */
+/** voting options */
 export enum VoteStatus {
   Down = 'DOWN',
   None = 'NONE',
   Up = 'UP'
 }
 
-export type PostSnippetFragment = { id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } };
+export type PostSnippetFragment = { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } };
 
 export type UserFragmentFragment = { id: string, username: string, email: string };
 
@@ -155,7 +155,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { createPost: { id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } };
+export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } };
 
 export type VoteMutationVariables = Exact<{
   input: UpdootInput;
@@ -204,13 +204,20 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type MeQuery = { me?: { id: string, username: string, email: string } | null };
 
+export type PostQueryVariables = Exact<{
+  postId: Scalars['String']['input'];
+}>;
+
+
+export type PostQuery = { post?: { text?: string | null, id: string, title: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } | null };
+
 export type PostsQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
   take: Scalars['Int']['input'];
 }>;
 
 
-export type PostsQuery = { posts: Array<{ id: string, title: string, textSnippet: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } }> };
+export type PostsQuery = { posts: Array<{ textSnippet?: string | null, id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } }> };
 
 export type PostsCountQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -221,7 +228,7 @@ export const PostSnippetFragmentDoc = gql`
     fragment PostSnippet on Post {
   id
   title
-  textSnippet
+  text
   points
   creatorId
   voteStatus
@@ -504,10 +511,52 @@ export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeSuspenseQueryHookResult = ReturnType<typeof useMeSuspenseQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const PostDocument = gql`
+    query Post($postId: String!) {
+  post(id: $postId) {
+    ...PostSnippet
+    text
+  }
+}
+    ${PostSnippetFragmentDoc}`;
+
+/**
+ * __usePostQuery__
+ *
+ * To run a query within a React component, call `usePostQuery` and pass it any options that fit your needs.
+ * When your component renders, `usePostQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = usePostQuery({
+ *   variables: {
+ *      postId: // value for 'postId'
+ *   },
+ * });
+ */
+export function usePostQuery(baseOptions: Apollo.QueryHookOptions<PostQuery, PostQueryVariables> & ({ variables: PostQueryVariables; skip?: boolean; } | { skip: boolean; }) ) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<PostQuery, PostQueryVariables>(PostDocument, options);
+      }
+export function usePostLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<PostQuery, PostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<PostQuery, PostQueryVariables>(PostDocument, options);
+        }
+export function usePostSuspenseQuery(baseOptions?: Apollo.SuspenseQueryHookOptions<PostQuery, PostQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useSuspenseQuery<PostQuery, PostQueryVariables>(PostDocument, options);
+        }
+export type PostQueryHookResult = ReturnType<typeof usePostQuery>;
+export type PostLazyQueryHookResult = ReturnType<typeof usePostLazyQuery>;
+export type PostSuspenseQueryHookResult = ReturnType<typeof usePostSuspenseQuery>;
+export type PostQueryResult = Apollo.QueryResult<PostQuery, PostQueryVariables>;
 export const PostsDocument = gql`
     query Posts($skip: Int!, $take: Int!) {
   posts(skip: $skip, take: $take) {
     ...PostSnippet
+    textSnippet
   }
 }
     ${PostSnippetFragmentDoc}`;

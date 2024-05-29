@@ -1,6 +1,7 @@
 query Posts($skip: Int!, $take: Int!) {
   posts(skip: $skip, take: $take) {
     ...PostSnippet
+    textSnippet
   }
 }
 

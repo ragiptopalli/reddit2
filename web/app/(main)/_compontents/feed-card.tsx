@@ -1,9 +1,6 @@
 'use client';
 
-import {
-  usePostsCountQuery,
-  usePostsQuery,
-} from '@/lib/graphql/generated/graphql';
+import { usePostsQuery } from '@/lib/graphql/generated/graphql';
 import type { PostsQuery } from '@/lib/graphql/generated/graphql';
 import { useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
@@ -15,7 +12,7 @@ const RESULTS_PER_PAGE = 10;
 
 export function FeedCard() {
   const [offset, setOffset] = useState<number>(0);
-  const { data: { postsCount = 0 } = {} } = usePostsCountQuery();
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
   const {
     data: { posts = [] } = {},
@@ -26,24 +23,32 @@ export function FeedCard() {
       take: RESULTS_PER_PAGE,
       skip: 0,
     },
-    onCompleted() {
-      if (offset >= postsCount) return;
-      setOffset((prev) => prev + 10);
+    onCompleted(data) {
+      if (data.posts.length < RESULTS_PER_PAGE) {
+        setHasMore(false);
+      }
+      setOffset(RESULTS_PER_PAGE);
     },
-    fetchPolicy: 'cache-and-network',
   });
 
   const loadMorePosts = () => {
     fetchMore({
       variables: {
         skip: offset,
+        take: RESULTS_PER_PAGE,
       },
       updateQuery: (
         previousResult: PostsQuery,
-        options: { fetchMoreResult: PostsQuery }
+        { fetchMoreResult }: { fetchMoreResult: PostsQuery }
       ) => {
+        if (!fetchMoreResult || fetchMoreResult.posts.length === 0) {
+          setHasMore(false);
+          return previousResult;
+        }
+        setOffset(offset + RESULTS_PER_PAGE);
         return {
-          posts: [...previousResult?.posts, ...options.fetchMoreResult.posts],
+          ...previousResult,
+          posts: [...previousResult.posts, ...fetchMoreResult.posts],
         };
       },
     }).catch(() => toast.error('Something went wrong'));
@@ -56,7 +61,7 @@ export function FeedCard() {
           className='flex flex-col space-y-4 w-full max-w-screen-xl justify-between'
           initialLoad={false}
           threshold={5}
-          hasMore={posts.length < postsCount}
+          hasMore={hasMore}
           loadMore={loadMorePosts}
         >
           {!loading &&

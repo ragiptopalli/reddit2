@@ -1,7 +1,7 @@
 fragment PostSnippet on Post {
   id
   title
-  textSnippet
+  text
   points
   creatorId
   voteStatus

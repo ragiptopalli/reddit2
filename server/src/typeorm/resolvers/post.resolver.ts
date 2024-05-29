@@ -69,17 +69,39 @@ export class PostResolver {
     });
   }
 
-  @Query((_returns) => Int)
-  async postsCount(@Ctx() { manager }: Context) {
-    return await manager.count(Post, {});
-  }
-
   @Query((_returns) => Post, { nullable: true })
   async post(
     @Arg('id') id: string,
-    @Ctx() { manager }: Context
+    @Ctx() { req, manager }: Context
   ): Promise<Post | null> {
-    return await manager.findOneBy(Post, { id });
+    const { userId } = req.session;
+    const post = await manager.findOneBy(Post, { id });
+
+    if (!post) throw new Error('Post not found!');
+
+    if (!userId) {
+      post.voteStatus = VoteStatus.NONE;
+    }
+
+    const updoot = await manager.findOneBy(Updoot, { userId, postId: post.id });
+
+    if (updoot) {
+      post.voteStatus =
+        updoot.value === 1
+          ? VoteStatus.UP
+          : updoot.value === -1
+          ? VoteStatus.DOWN
+          : VoteStatus.NONE;
+    } else {
+      post.voteStatus = VoteStatus.NONE;
+    }
+
+    return post;
+  }
+
+  @Query((_returns) => Int)
+  async postsCount(@Ctx() { manager }: Context) {
+    return await manager.count(Post, {});
   }
 
   @Mutation((_returns) => Post)
@@ -159,7 +181,7 @@ export class PostResolver {
     return creator;
   }
 
-  @FieldResolver((_returns) => String)
+  @FieldResolver((_returns) => String, { nullable: true })
   textSnippet(@Root() post: Post) {
     if (post.text) return post.text?.slice(0, 200);
     return null;
