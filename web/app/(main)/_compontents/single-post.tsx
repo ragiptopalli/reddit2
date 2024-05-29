@@ -112,6 +112,7 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
           <CardHeaderContent
             username={post.postCreator.username}
             createdAt={post.createdAt}
+            postId={post.id}
           />
         </CardHeader>
         <Separator className='w-[95%] mx-auto' />
@@ -136,11 +137,12 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
 const CardHeaderContent = ({
   username,
   createdAt,
+  postId,
 }: {
   username: string;
   createdAt: any;
+  postId: string;
 }) => {
-  const post = { id: '1' };
   return (
     <div className='space-x-2 flex items-center'>
       <Link href={`/u/${username}`}>
@@ -150,7 +152,7 @@ const CardHeaderContent = ({
         </div>
       </Link>
       <Dot className='h-3 w-3 fill-primary' />
-      <Link href={`/u/${username}/${post.id}`}>
+      <Link href={`/u/${username}/post/${postId}`}>
         <div className='hover:underline'>
           {getCustomTimeFormat(new Date(createdAt))}
         </div>
