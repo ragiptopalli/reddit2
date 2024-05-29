@@ -51,41 +51,22 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
 
         let newPoints = post.points;
         let newStatus = post.voteStatus;
-        if (data?.vote) {
-          if (post.voteStatus === VoteStatus.Up && status === VoteStatus.Up) {
-            newPoints -= 1;
-            newStatus = VoteStatus.None;
-          } else if (
-            post.voteStatus === VoteStatus.Down &&
-            status === VoteStatus.Down
-          ) {
-            newPoints += 1;
-            newStatus = VoteStatus.None;
-          } else if (
-            post.voteStatus === VoteStatus.None &&
-            status === VoteStatus.Up
-          ) {
-            newPoints += 1;
-            newStatus = VoteStatus.Up;
-          } else if (
-            post.voteStatus === VoteStatus.None &&
-            status === VoteStatus.Down
-          ) {
-            newPoints -= 1;
-            newStatus = VoteStatus.Down;
-          } else if (
-            post.voteStatus === VoteStatus.Up &&
-            status === VoteStatus.Down
-          ) {
-            newPoints -= 2;
-            newStatus = VoteStatus.Down;
-          } else if (
-            post.voteStatus === VoteStatus.Down &&
-            status === VoteStatus.Up
-          ) {
-            newPoints += 2;
-            newStatus = VoteStatus.Up;
-          }
+
+        const voteValueMap = {
+          [VoteStatus.Up]: 1,
+          [VoteStatus.Down]: -1,
+          [VoteStatus.None]: 0,
+        };
+
+        const existingVoteValue = voteValueMap[post.voteStatus];
+        const newVoteValue = voteValueMap[status];
+
+        if (existingVoteValue === newVoteValue) {
+          newPoints -= existingVoteValue;
+          newStatus = VoteStatus.None;
+        } else {
+          newPoints = newPoints - existingVoteValue + newVoteValue;
+          newStatus = status;
         }
 
         cache.writeFragment<PartialPostFragment>({

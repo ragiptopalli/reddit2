@@ -15,11 +15,6 @@ export class UpdootResolver {
     const { userId } = req.session;
     const { status, postId } = input;
 
-    const post = await manager.findOneBy(Post, { id: postId });
-    if (!post) throw new Error('Post not found!');
-
-    const updoot = await manager.findOneBy(Updoot, { postId, userId });
-
     const valueMap = {
       [VoteStatus.UP]: 1,
       [VoteStatus.DOWN]: -1,
@@ -28,22 +23,36 @@ export class UpdootResolver {
 
     const newValue = valueMap[status];
 
-    if (updoot) {
-      if (updoot.value === newValue) {
-        await manager.update(Updoot, { postId, userId }, { value: 0 });
-        post.voteStatus = VoteStatus.NONE;
+    return manager.transaction(async (tm) => {
+      const post = await tm.findOneBy(Post, { id: postId });
+      if (!post) throw new Error('Post not found!');
+
+      const updoot = await tm.findOneBy(Updoot, { postId, userId });
+
+      if (updoot) {
+        if (updoot.value === valueMap[status]) {
+          await tm.update(Updoot, { postId, userId }, { value: 0 });
+          post.voteStatus = VoteStatus.NONE;
+        } else {
+          await tm.update(Updoot, { postId, userId }, { value: newValue });
+          post.voteStatus = status;
+        }
       } else {
-        await manager.update(Updoot, { postId, userId }, { value: newValue });
+        await tm.insert(Updoot, { postId, userId, value: newValue });
         post.voteStatus = status;
       }
-    } else {
-      await manager.insert(Updoot, { postId, userId, value: newValue });
-      post.voteStatus = status;
-    }
 
-    post.points = (await manager.sum(Updoot, 'value', { postId })) ?? 0;
-    await manager.save(post);
+      const newPoints = await tm
+        .createQueryBuilder(Updoot, 'updoot')
+        .where('updoot.postId = :postId', { postId })
+        .select('SUM(updoot.value)', 'sum')
+        .getRawOne();
 
-    return true;
+      console.log(newPoints, 'NEW POINTSS');
+
+      post.points = newPoints ? parseInt(newPoints.sum) : 0;
+      await tm.save(post);
+      return true;
+    });
   }
 }
