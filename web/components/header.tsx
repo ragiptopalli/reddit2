@@ -1,12 +1,12 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { ThemeToggle } from './theme-toggle';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 import Link from 'next/link';
 import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
-import { Sheet, SheetContent, SheetTrigger } from './ui/sheet';
-import { Button } from './ui/button';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 import { useLogoutMutation, useMeQuery } from '@/lib/graphql/generated/graphql';
 import {
   DropdownMenu,
@@ -15,7 +15,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 
 import { CircleUser, Loader2 } from 'lucide-react';
 import { CreatePostModal } from './create-post-modal';

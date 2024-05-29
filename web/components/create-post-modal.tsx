@@ -98,7 +98,7 @@ export const CreatePostModal = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className='px-2 gap-2'>
+        <Button className='px-2 gap-2' variant='ringHover'>
           Create <PlusCircledIcon className='h-5 w-5' />
         </Button>
       </DialogTrigger>

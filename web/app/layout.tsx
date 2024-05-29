@@ -2,8 +2,8 @@ import type { Metadata } from 'next';
 import { Fira_Code as FontSans } from 'next/font/google';
 import '../styles/globals.css';
 import { cn } from '@/lib/utils';
-import { ThemeProvider } from '@/components/theme-provider';
-import { GraphqlProvider } from '@/lib/apollo/Apollo';
+import { ThemeProvider } from '@/providers/theme/theme-provider';
+import { GraphqlProvider } from '@/providers/apollo/apollo-provider';
 import { Toaster } from '@/components/ui/sonner';
 
 const fontSans = FontSans({
@@ -27,12 +27,7 @@ export default function RootLayout({
       <body
         className={cn('bg-background font-sans antialiased', fontSans.variable)}
       >
-        <ThemeProvider
-          attribute='class'
-          defaultTheme='system'
-          enableSystem
-          disableTransitionOnChange
-        >
+        <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
           <GraphqlProvider>{children}</GraphqlProvider>
         </ThemeProvider>
         <Toaster richColors />
