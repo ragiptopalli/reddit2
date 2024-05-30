@@ -7,15 +7,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from './ui/textarea';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { PlusCircledIcon } from '@radix-ui/react-icons';
 import { Button } from './ui/button';
@@ -35,6 +26,15 @@ import {
   useCreatePostMutation,
 } from '@/lib/graphql/generated/graphql';
 import { useRouter } from 'next/navigation';
+import {
+  DialogOrVaul,
+  DialogOrVaulContent,
+  DialogOrVaulDescription,
+  DialogOrVaulFooter,
+  DialogOrVaulHeader,
+  DialogOrVaulTitle,
+  DialogOrVaulTrigger,
+} from '@/components/ui/dialog-or-vaul';
 
 export const CreatePostModal = () => {
   const router = useRouter();
@@ -96,19 +96,19 @@ export const CreatePostModal = () => {
     });
   };
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
+    <DialogOrVaul open={open} onOpenChange={setOpen}>
+      <DialogOrVaulTrigger asChild>
         <Button className='px-2 gap-2' variant='ringHover'>
           Create <PlusCircledIcon className='h-5 w-5' />
         </Button>
-      </DialogTrigger>
-      <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Create a new post!</DialogTitle>
-          <DialogDescription>
+      </DialogOrVaulTrigger>
+      <DialogOrVaulContent>
+        <DialogOrVaulHeader>
+          <DialogOrVaulTitle>Create a new post!</DialogOrVaulTitle>
+          <DialogOrVaulDescription>
             Write something cool when you&apos;re done just click post.
-          </DialogDescription>
-        </DialogHeader>
+          </DialogOrVaulDescription>
+        </DialogOrVaulHeader>
         <div className='grid gap-4 py-4'>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
@@ -149,7 +149,7 @@ export const CreatePostModal = () => {
             </form>
           </Form>
         </div>
-        <DialogFooter>
+        <DialogOrVaulFooter>
           <Alert>
             <Terminal className='h-4 w-4' />
             <AlertTitle>Reminder!</AlertTitle>
@@ -157,8 +157,8 @@ export const CreatePostModal = () => {
               You can <span>@mention</span> other users.
             </AlertDescription>
           </Alert>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </DialogOrVaulFooter>
+      </DialogOrVaulContent>
+    </DialogOrVaul>
   );
 };

@@ -28,7 +28,11 @@ export default function RootLayout({
         className={cn('bg-background font-sans antialiased', fontSans.variable)}
       >
         <ThemeProvider attribute='class' defaultTheme='system' enableSystem>
-          <GraphqlProvider>{children}</GraphqlProvider>
+          <GraphqlProvider>
+            <div vaul-drawer-wrapper='' className='bg-background'>
+              {children}
+            </div>
+          </GraphqlProvider>
         </ThemeProvider>
         <Toaster richColors />
       </body>

@@ -3,15 +3,6 @@
 import { useState, useRef, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogPortal,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -19,6 +10,14 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EllipsisVerticalIcon, PencilRulerIcon, TrashIcon } from 'lucide-react';
 import UpdatePost from './update-post';
+import {
+  DialogOrVaul,
+  DialogOrVaulContent,
+  DialogOrVaulDescription,
+  DialogOrVaulPortal,
+  DialogOrVaulTitle,
+  DialogOrVaulTrigger,
+} from '@/components/ui/dialog-or-vaul';
 
 type P = {
   postId: string;
@@ -76,13 +75,13 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
           onSelect={handleDialogItemSelect}
           onOpenChange={handleDialogItemOpenChange}
         >
-          <DialogTitle className='DialogTitle'>Delete</DialogTitle>
-          <DialogDescription className='DialogDescription'>
+          <DialogOrVaulTitle className='DialogTitle'>Delete</DialogOrVaulTitle>
+          <DialogOrVaulDescription className='DialogDescription'>
             Are you sure you want to delete this post?
-          </DialogDescription>
-          <DialogFooter>
+          </DialogOrVaulDescription>
+          <DialogOrVaulDescription>
             <Button type='submit'>Delete</Button>
-          </DialogFooter>
+          </DialogOrVaulDescription>
         </DialogItem>
         <DialogItem
           triggerChildren={
@@ -94,7 +93,7 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
           onSelect={handleDialogItemSelect}
           onOpenChange={handleDialogItemOpenChange}
         >
-          <DialogTitle className='DialogTitle'>Edit</DialogTitle>
+          <DialogOrVaulTitle className='DialogTitle'>Edit</DialogOrVaulTitle>
           <UpdatePost
             postId={postId}
             postTitle={postTitle}
@@ -121,8 +120,8 @@ const DialogItem = ({
   onOpenChange,
 }: Props) => {
   return (
-    <Dialog onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
+    <DialogOrVaul onOpenChange={onOpenChange}>
+      <DialogOrVaulTrigger asChild>
         <DropdownMenuItem
           className='p-3'
           onSelect={(event) => {
@@ -132,10 +131,10 @@ const DialogItem = ({
         >
           {triggerChildren}
         </DropdownMenuItem>
-      </DialogTrigger>
-      <DialogPortal>
-        <DialogContent>{children}</DialogContent>
-      </DialogPortal>
-    </Dialog>
+      </DialogOrVaulTrigger>
+      <DialogOrVaulPortal>
+        <DialogOrVaulContent>{children}</DialogOrVaulContent>
+      </DialogOrVaulPortal>
+    </DialogOrVaul>
   );
 };
