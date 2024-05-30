@@ -48,7 +48,7 @@ export class Post {
   @ManyToOne((_type) => User, (user) => user.posts)
   creator: User;
 
-  @OneToMany((_type) => Updoot, (updoot) => updoot.post)
+  @OneToMany((_type) => Updoot, (updoot) => updoot.post, { cascade: true })
   updoots!: Updoot[];
 
   @Field((_type) => VoteStatus, {

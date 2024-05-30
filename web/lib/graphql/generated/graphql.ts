@@ -157,6 +157,13 @@ export type CreatePostMutationVariables = Exact<{
 
 export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } };
 
+export type DeletePostMutationVariables = Exact<{
+  id: Scalars['String']['input'];
+}>;
+
+
+export type DeletePostMutation = { deletePost: boolean };
+
 export type UpdatePostMutationVariables = Exact<{
   id: Scalars['String']['input'];
   title: Scalars['String']['input'];
@@ -288,6 +295,36 @@ export function useCreatePostMutation(baseOptions?: Apollo.MutationHookOptions<C
       }
 export type CreatePostMutationHookResult = ReturnType<typeof useCreatePostMutation>;
 export type CreatePostMutationResult = Apollo.MutationResult<CreatePostMutation>;
+export const DeletePostDocument = gql`
+    mutation DeletePost($id: String!) {
+  deletePost(id: $id)
+}
+    `;
+export type DeletePostMutationFn = Apollo.MutationFunction<DeletePostMutation, DeletePostMutationVariables>;
+
+/**
+ * __useDeletePostMutation__
+ *
+ * To run a mutation, you first call `useDeletePostMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeletePostMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deletePostMutation, { data, loading, error }] = useDeletePostMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeletePostMutation(baseOptions?: Apollo.MutationHookOptions<DeletePostMutation, DeletePostMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeletePostMutation, DeletePostMutationVariables>(DeletePostDocument, options);
+      }
+export type DeletePostMutationHookResult = ReturnType<typeof useDeletePostMutation>;
+export type DeletePostMutationResult = Apollo.MutationResult<DeletePostMutation>;
 export const UpdatePostDocument = gql`
     mutation UpdatePost($id: String!, $title: String!, $text: String) {
   updatePost(id: $id, title: $title, text: $text) {

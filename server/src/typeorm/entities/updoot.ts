@@ -16,6 +16,6 @@ export class Updoot {
   @PrimaryColumn()
   postId!: string;
 
-  @ManyToOne((_type) => Post, (post) => post.updoots)
+  @ManyToOne((_type) => Post, (post) => post.updoots, { onDelete: 'CASCADE' })
   post: Post;
 }

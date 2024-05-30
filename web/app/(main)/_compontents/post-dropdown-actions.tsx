@@ -8,16 +8,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { EllipsisVerticalIcon, PencilRulerIcon, TrashIcon } from 'lucide-react';
+import {
+  EllipsisVerticalIcon,
+  Loader2,
+  PencilRulerIcon,
+  TrashIcon,
+  TriangleAlertIcon,
+} from 'lucide-react';
 import UpdatePost from './update-post';
 import {
   DialogOrVaul,
   DialogOrVaulContent,
   DialogOrVaulDescription,
-  DialogOrVaulPortal,
+  DialogOrVaulFooter,
   DialogOrVaulTitle,
   DialogOrVaulTrigger,
 } from '@/components/ui/dialog-or-vaul';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
+import { useDeletePostMutation } from '@/lib/graphql/generated/graphql';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 type P = {
   postId: string;
@@ -30,6 +40,20 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
   const [hasOpenDialog, setHasOpenDialog] = useState(false);
   const dropdownTriggerRef = useRef<null | HTMLButtonElement>(null);
   const focusRef = useRef<null | HTMLButtonElement>(null);
+  const router = useRouter();
+
+  const [deletePost, { loading: deleteLoading }] = useDeletePostMutation({
+    onCompleted() {
+      toast.success('Post was deleted successfully', {
+        duration: 1000,
+      });
+      router.refresh();
+      setHasOpenDialog(false);
+    },
+    onError(error) {
+      toast.error(error.message);
+    },
+  });
 
   const handleDialogItemSelect = () => {
     focusRef.current = dropdownTriggerRef.current;
@@ -40,6 +64,14 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
     if (open === false) {
       setDropdownOpen(false);
     }
+  };
+
+  const handleDeletePost = async () => {
+    await deletePost({
+      variables: {
+        id: postId,
+      },
+    });
   };
 
   return (
@@ -69,31 +101,28 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
           triggerChildren={
             <>
               <TrashIcon className='mr-2 h-4 w-4' />
-              <span>Delete Post</span>
+              <span>Delete</span>
             </>
           }
           onSelect={handleDialogItemSelect}
           onOpenChange={handleDialogItemOpenChange}
         >
-          <DialogOrVaulTitle className='DialogTitle'>Delete</DialogOrVaulTitle>
-          <DialogOrVaulDescription className='DialogDescription'>
-            Are you sure you want to delete this post?
-          </DialogOrVaulDescription>
-          <DialogOrVaulDescription>
-            <Button type='submit'>Delete</Button>
-          </DialogOrVaulDescription>
+          <DeletePost
+            onHandleDeletePost={handleDeletePost}
+            deleteLoading={deleteLoading}
+          />
         </DialogItem>
         <DialogItem
           triggerChildren={
             <>
               <PencilRulerIcon className='mr-2 h-4 w-4' />
-              <span>Edit Post</span>
+              <span>Edit</span>
             </>
           }
           onSelect={handleDialogItemSelect}
           onOpenChange={handleDialogItemOpenChange}
         >
-          <DialogOrVaulTitle className='DialogTitle'>Edit</DialogOrVaulTitle>
+          <DialogOrVaulTitle>Edit Post</DialogOrVaulTitle>
           <UpdatePost
             postId={postId}
             postTitle={postTitle}
@@ -132,9 +161,43 @@ const DialogItem = ({
           {triggerChildren}
         </DropdownMenuItem>
       </DialogOrVaulTrigger>
-      <DialogOrVaulPortal>
-        <DialogOrVaulContent>{children}</DialogOrVaulContent>
-      </DialogOrVaulPortal>
+      <DialogOrVaulContent>{children}</DialogOrVaulContent>
     </DialogOrVaul>
+  );
+};
+
+const DeletePost = ({
+  onHandleDeletePost,
+  deleteLoading,
+}: {
+  onHandleDeletePost: () => void;
+  deleteLoading: boolean;
+}) => {
+  return (
+    <>
+      <DialogOrVaulTitle>Delete Post</DialogOrVaulTitle>
+      <DialogOrVaulDescription>
+        Are you sure you want to delete this post?
+        <Alert className='mt-2 flex gap-4'>
+          <span>
+            <TriangleAlertIcon className='h-8 w-8' />
+          </span>
+          <div>
+            <AlertTitle>Careful!</AlertTitle>
+            <AlertDescription>This action is irreversible!.</AlertDescription>
+          </div>
+        </Alert>
+      </DialogOrVaulDescription>
+      <DialogOrVaulFooter>
+        <Button
+          onClick={onHandleDeletePost}
+          disabled={deleteLoading}
+          type='submit'
+        >
+          {deleteLoading && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
+          Delete
+        </Button>
+      </DialogOrVaulFooter>
+    </>
   );
 };

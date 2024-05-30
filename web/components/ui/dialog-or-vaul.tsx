@@ -10,7 +10,6 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
@@ -21,7 +20,6 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
@@ -87,19 +85,6 @@ const DialogOrVaulContent = ({
   ...props
 }: DialogOrVaulProps) => {
   const Component = useResponsiveComponent(DialogContent, DrawerContent);
-  return (
-    <Component className={className} {...props}>
-      {children}
-    </Component>
-  );
-};
-
-const DialogOrVaulPortal = ({
-  className,
-  children,
-  ...props
-}: DialogOrVaulProps) => {
-  const Component = useResponsiveComponent(DialogPortal, DrawerPortal);
   return (
     <Component className={className} {...props}>
       {children}
@@ -184,5 +169,4 @@ export {
   DialogOrVaulTitle,
   DialogOrVaulBody,
   DialogOrVaulFooter,
-  DialogOrVaulPortal,
 };
