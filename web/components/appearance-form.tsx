@@ -1,13 +1,10 @@
 'use client';
 
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ChevronDownIcon } from '@radix-ui/react-icons';
 import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 
-import { cn } from '@/lib/utils';
-import { toast } from 'sonner';
-import { buttonVariants, Button } from './ui/button';
+import { Button } from './ui/button';
 import {
   FormField,
   FormItem,
@@ -17,72 +14,33 @@ import {
   FormMessage,
 } from './ui/form';
 import { RadioGroupItem, RadioGroup } from './ui/radio-group';
+import { useTheme } from 'next-themes';
 
 const appearanceFormSchema = z.object({
   theme: z.enum(['light', 'dark'], {
     required_error: 'Please select a theme.',
   }),
-  font: z.enum(['inter', 'manrope', 'system'], {
-    invalid_type_error: 'Select a font',
-    required_error: 'Please select a font.',
-  }),
 });
 
 type AppearanceFormValues = z.infer<typeof appearanceFormSchema>;
 
-const defaultValues: Partial<AppearanceFormValues> = {
-  theme: 'light',
-};
-
 export function AppearanceForm() {
+  const { theme, setTheme } = useTheme();
+
   const form = useForm<AppearanceFormValues>({
     resolver: zodResolver(appearanceFormSchema),
-    defaultValues,
+    defaultValues: {
+      theme: theme === 'dark' ? 'dark' : 'light',
+    },
   });
 
   function onSubmit(data: AppearanceFormValues) {
-    toast(
-      <div>
-        <p>You have submitted the following values:</p>
-        <pre className='mt-2 w-[340px] rounded-md bg-slate-950 p-4'>
-          <code className='text-white'>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      </div>
-    );
+    setTheme(data.theme);
   }
 
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-8'>
-        <FormField
-          control={form.control}
-          name='font'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Font</FormLabel>
-              <div className='relative w-max'>
-                <FormControl>
-                  <select
-                    className={cn(
-                      buttonVariants({ variant: 'outline' }),
-                      'w-[200px] appearance-none font-normal'
-                    )}
-                    {...field}
-                  >
-                    <option value='inter'>Inter</option>
-                    <option value='manrope'>Manrope</option>
-                    <option value='system'>System</option>
-                  </select>
-                </FormControl>
-                <ChevronDownIcon className='absolute right-3 top-2.5 h-4 w-4 opacity-50' />
-              </div>
-              <FormDescription>
-                Set the font you want to use in the dashboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name='theme'
@@ -154,7 +112,6 @@ export function AppearanceForm() {
             </FormItem>
           )}
         />
-
         <Button type='submit'>Update preferences</Button>
       </form>
     </FormProvider>

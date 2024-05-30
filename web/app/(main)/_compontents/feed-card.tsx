@@ -55,7 +55,7 @@ export function FeedCard() {
   };
 
   return (
-    <>
+    <div className='col-span-4 md:col-span-2'>
       {!loading && posts.length > 0 ? (
         <InfiniteScroll
           className='flex flex-col space-y-4 w-full max-w-screen-xl justify-between'
@@ -75,6 +75,6 @@ export function FeedCard() {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }

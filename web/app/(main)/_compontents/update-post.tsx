@@ -16,11 +16,7 @@ import type { UpdatePostSchemaType } from '@/lib/validation';
 import { updatePostSchema } from '@/lib/validation';
 import { Loader2Icon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import {
-  PostsDocument,
-  PostsQuery,
-  useUpdatePostMutation,
-} from '@/lib/graphql/generated/graphql';
+import { useUpdatePostMutation } from '@/lib/graphql/generated/graphql';
 import { toast } from 'sonner';
 
 type P = {
@@ -63,28 +59,7 @@ export default function UpdatePost({
         title: values.title,
         text: values.text,
       },
-      update: (cache, { data }) => {
-        const existingPosts = cache.readQuery<PostsQuery>({
-          query: PostsDocument,
-          variables: {
-            take: 10,
-            skip: 0,
-          },
-        });
-
-        if (existingPosts) {
-          cache.writeQuery({
-            query: PostsDocument,
-            variables: {
-              take: 10,
-              skip: 0,
-            },
-            data: {
-              posts: [data?.updatePost, ...existingPosts.posts],
-            },
-          });
-        }
-      },
+      // TODO: update cache for update post
     });
   };
 

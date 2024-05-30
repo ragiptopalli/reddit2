@@ -13,7 +13,7 @@ export default function UserProfile({
   params: { username: string };
 }) {
   return (
-    <section className='w-full'>
+    <section className='col-span-4 md:col-span-2'>
       <Card>
         <CardHeader className='p-2'>
           <h1>{params.username}</h1>
