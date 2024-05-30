@@ -128,49 +128,45 @@ export class PostResolver {
   }
 
   @Mutation((_returns) => Post, { nullable: true })
+  @UseMiddleware(isAuth)
   async updatePost(
     @Arg('id') id: string,
     @Arg('title') title: string,
     @Arg('text', () => String, { nullable: true }) text: string,
-    @Ctx() { manager }: Context
+    @Ctx() { manager, req }: Context
   ): Promise<Post | null> {
-    const post = await manager.findOneBy(Post, { id });
+    const post = await manager
+      .createQueryBuilder()
+      .update(Post)
+      .set({ title, text })
+      .where('id = :id and creatorId = :creatorId', {
+        id,
+        creatorId: req.session.userId,
+      })
+      .returning('*')
+      .execute();
 
-    if (!post) {
-      throw new Error('Could not find the post!');
-    }
-
-    post.title = title;
-    post.text = text;
-
-    try {
-      await manager.save(post);
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        throw new Error(err.message);
-      } else {
-        throw new Error('An unexpected error occurred!');
-      }
-    }
-
-    return post;
+    return post.raw[0];
   }
 
-  @Mutation((_returns) => Boolean)
+  @Mutation((_returns) => Post, { nullable: true })
+  @UseMiddleware(isAuth)
   async deletePost(
     @Arg('id') id: string,
-    @Ctx() { manager }: Context
-  ): Promise<boolean> {
-    try {
-      await manager.delete(Post, { id });
-      return true;
-    } catch (err) {
-      if (err instanceof QueryFailedError) {
-        throw new Error(err.message);
-      } else {
-        throw new Error('An unexpected error occurred!');
-      }
-    }
+    @Ctx() { manager, req }: Context
+  ): Promise<Post | null> {
+    const post = await manager
+      .createQueryBuilder()
+      .delete()
+      .from(Post)
+      .where('id = :id and creatorId = :creatorId', {
+        id,
+        creatorId: req.session.userId,
+      })
+      .returning('*')
+      .execute();
+
+    return post.raw[0];
   }
 
   @FieldResolver((_returns) => User)
