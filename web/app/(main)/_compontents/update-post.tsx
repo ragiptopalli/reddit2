@@ -27,21 +27,21 @@ type P = {
   postId: string;
   postTitle: string;
   postText?: string | null;
-  setHasOpenDialog: (open: boolean) => void;
+  onHandleEditDialogOpen: (value: boolean) => void;
 };
 
 export default function UpdatePost({
   postId,
   postTitle,
   postText,
-  setHasOpenDialog,
+  onHandleEditDialogOpen,
 }: P) {
   const [updatePost, { loading }] = useUpdatePostMutation({
     onCompleted() {
       toast.success('Post was updated successfully', {
         duration: 1000,
       });
-      setHasOpenDialog(false);
+      onHandleEditDialogOpen(false);
     },
     onError(error) {
       toast.error(error.message);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, ReactNode } from 'react';
+import { useState, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -36,34 +36,27 @@ type P = {
 };
 
 export const DropdownActions = ({ postId, postTitle, postText }: P) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [hasOpenDialog, setHasOpenDialog] = useState(false);
-  const dropdownTriggerRef = useRef<null | HTMLButtonElement>(null);
-  const focusRef = useRef<null | HTMLButtonElement>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
   const router = useRouter();
 
   const [deletePost, { loading: deleteLoading }] = useDeletePostMutation({
     onCompleted() {
-      toast.success('Post was deleted successfully', {
-        duration: 1000,
-      });
+      toast.success('Post was deleted successfully', { duration: 1000 });
+      handleDeleteDialogOpen(false);
       router.refresh();
-      setHasOpenDialog(false);
     },
     onError(error) {
       toast.error(error.message);
     },
   });
 
-  const handleDialogItemSelect = () => {
-    focusRef.current = dropdownTriggerRef.current;
+  const handleEditDialogOpen = (value: boolean) => {
+    setEditDialogOpen(value);
   };
 
-  const handleDialogItemOpenChange = (open: boolean) => {
-    setHasOpenDialog(open);
-    if (open === false) {
-      setDropdownOpen(false);
-    }
+  const handleDeleteDialogOpen = (value: boolean) => {
+    setDeleteDialogOpen(value);
   };
 
   const handleDeletePost = async () => {
@@ -75,28 +68,13 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
   };
 
   return (
-    <DropdownMenu
-      open={dropdownOpen}
-      onOpenChange={setDropdownOpen}
-      modal={false}
-    >
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' className='h-7 w-7 p-0'>
           <EllipsisVerticalIcon />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className='w-40'
-        align='end'
-        hidden={hasOpenDialog}
-        onCloseAutoFocus={(event) => {
-          if (focusRef.current) {
-            focusRef.current.focus();
-            focusRef.current = null;
-            event.preventDefault();
-          }
-        }}
-      >
+      <DropdownMenuContent className='w-40' align='end'>
         <DialogItem
           triggerChildren={
             <>
@@ -104,8 +82,9 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
               <span>Delete</span>
             </>
           }
-          onSelect={handleDialogItemSelect}
-          onOpenChange={handleDialogItemOpenChange}
+          onSelect={() => handleDeleteDialogOpen(true)}
+          open={deleteDialogOpen}
+          onClose={() => handleDeleteDialogOpen(false)}
         >
           <DeletePost
             onHandleDeletePost={handleDeletePost}
@@ -119,15 +98,16 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
               <span>Edit</span>
             </>
           }
-          onSelect={handleDialogItemSelect}
-          onOpenChange={handleDialogItemOpenChange}
+          onSelect={() => handleEditDialogOpen(true)}
+          open={editDialogOpen}
+          onClose={() => handleEditDialogOpen(false)}
         >
           <DialogOrVaulTitle>Edit Post</DialogOrVaulTitle>
           <UpdatePost
             postId={postId}
             postTitle={postTitle}
             postText={postText}
-            setHasOpenDialog={setHasOpenDialog}
+            onHandleEditDialogOpen={handleEditDialogOpen}
           />
         </DialogItem>
       </DropdownMenuContent>
@@ -135,21 +115,23 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
   );
 };
 
-type Props = {
+type DialogItemProps = {
   triggerChildren: ReactNode;
   children: ReactNode;
-  onSelect: () => void;
-  onOpenChange: (open: boolean) => void;
+  onSelect?: () => void;
+  open: boolean;
+  onClose: () => void;
 };
 
 const DialogItem = ({
   triggerChildren,
   children,
   onSelect,
-  onOpenChange,
-}: Props) => {
+  open,
+  onClose,
+}: DialogItemProps) => {
   return (
-    <DialogOrVaul onOpenChange={onOpenChange}>
+    <DialogOrVaul open={open} onOpenChange={onClose}>
       <DialogOrVaulTrigger asChild>
         <DropdownMenuItem
           className='p-3'
@@ -178,16 +160,16 @@ const DeletePost = ({
       <DialogOrVaulTitle>Delete Post</DialogOrVaulTitle>
       <DialogOrVaulDescription>
         Are you sure you want to delete this post?
-        <Alert className='mt-2 flex gap-4'>
-          <span>
-            <TriangleAlertIcon className='h-8 w-8' />
-          </span>
-          <div>
-            <AlertTitle>Careful!</AlertTitle>
-            <AlertDescription>This action is irreversible!.</AlertDescription>
-          </div>
-        </Alert>
       </DialogOrVaulDescription>
+      <Alert className='mt-2 flex gap-4'>
+        <span>
+          <TriangleAlertIcon className='h-8 w-8' />
+        </span>
+        <div>
+          <AlertTitle>Careful!</AlertTitle>
+          <AlertDescription>This action is irreversible!.</AlertDescription>
+        </div>
+      </Alert>
       <DialogOrVaulFooter>
         <Button
           onClick={onHandleDeletePost}

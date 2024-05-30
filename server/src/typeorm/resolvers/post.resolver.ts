@@ -114,6 +114,7 @@ export class PostResolver {
       ...input,
       creatorId: req.session.userId,
     });
+    post.voteStatus = VoteStatus.NONE;
     try {
       await manager.save(post);
     } catch (err) {
