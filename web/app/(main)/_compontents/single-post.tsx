@@ -12,14 +12,21 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { getCustomTimeFormat } from '@/lib/getCustomTimeFormat';
 import {
-  useVoteMutation,
-  type PostsQuery,
-  VoteStatus,
   PostSnippetFragment,
+  VoteStatus,
+  useVoteMutation,
 } from '@/lib/graphql/generated/graphql';
+import type { PostsQuery } from '@/lib/graphql/generated/graphql';
 import { gql } from '@apollo/client';
-import { BadgeCheck, ChevronDown, ChevronUp, Dot } from 'lucide-react';
+import {
+  BadgeCheckIcon,
+  ChevronDownIcon,
+  ChevronUpIcon,
+  DotIcon,
+} from 'lucide-react';
 import Link from 'next/link';
+
+import { DropdownActions } from './post-dropdown-actions';
 
 type PartialPostFragment = Partial<Pick<PostSnippetFragment, 'id'>> &
   Pick<PostSnippetFragment, 'voteStatus' | 'points'>;
@@ -90,11 +97,7 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
     <section className='w-full'>
       <Card>
         <CardHeader className='p-2'>
-          <CardHeaderContent
-            username={post.postCreator.username}
-            createdAt={post.createdAt}
-            postId={post.id}
-          />
+          <CardHeaderContent post={post} />
         </CardHeader>
         <Separator className='w-[95%] mx-auto' />
         <CardContent className='py-4 px-2'>
@@ -115,29 +118,28 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
   );
 };
 
-const CardHeaderContent = ({
-  username,
-  createdAt,
-  postId,
-}: {
-  username: string;
-  createdAt: any;
-  postId: string;
-}) => {
+const CardHeaderContent = ({ post }: { post: PostsQuery['posts'][0] }) => {
   return (
-    <div className='space-x-2 flex items-center'>
-      <Link href={`/u/${username}`}>
-        <div className='flex items-center '>
-          <span>{username}</span>
-          <BadgeCheck className='ml-1.5 h-5 w-5 fill-primary text-background' />
-        </div>
-      </Link>
-      <Dot className='h-3 w-3 fill-primary' />
-      <Link href={`/u/${username}/post/${postId}`}>
-        <div className='hover:underline'>
-          {getCustomTimeFormat(new Date(createdAt))}
-        </div>
-      </Link>
+    <div className='space-x-2 flex items-center justify-between'>
+      <div className='flex items-center'>
+        <Link href={`/u/${post.postCreator.username}`}>
+          <div className='flex items-center '>
+            <span>{post.postCreator.username}</span>
+            <BadgeCheckIcon className='ml-1.5 h-5 w-5 fill-primary text-background' />
+          </div>
+        </Link>
+        <DotIcon className='h-3 w-3 fill-primary' />
+        <Link href={`/u/${post.postCreator.username}/p/${post.id}`}>
+          <div className='hover:underline'>
+            {getCustomTimeFormat(new Date(post.createdAt))}
+          </div>
+        </Link>
+      </div>
+      <DropdownActions
+        postId={post.id}
+        postTitle={post.title}
+        postText={post.text}
+      />
     </div>
   );
 };
@@ -163,7 +165,7 @@ const VoteButtons = ({
         disabled={loading}
         className='h-7 w-7 p-0'
       >
-        <ChevronUp />
+        <ChevronUpIcon />
       </Button>
       <span className='mx-2'>{points}</span>
       <Button
@@ -174,7 +176,7 @@ const VoteButtons = ({
         disabled={loading}
         className='h-7 w-7 p-0'
       >
-        <ChevronDown />
+        <ChevronDownIcon />
       </Button>
     </div>
   );
