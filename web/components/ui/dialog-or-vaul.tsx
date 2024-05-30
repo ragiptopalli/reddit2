@@ -1,8 +1,5 @@
 'use client';
 
-import * as React from 'react';
-import { cn } from '@/lib/utils';
-import { useMediaQuery } from 'usehooks-ts';
 import {
   Dialog,
   DialogClose,
@@ -10,6 +7,8 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
+  DialogOverlay,
+  DialogPortal,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
@@ -20,31 +19,35 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
   DrawerTitle,
   DrawerTrigger,
 } from '@/components/ui/drawer';
+import * as React from 'react';
+import { useMediaQuery } from 'usehooks-ts';
 
 interface BaseProps {
   children: React.ReactNode;
 }
+
+type CommonProps = {
+  className?: string;
+  asChild?: true;
+};
 
 interface RootDialogOrVaulProps extends BaseProps {
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
 
-interface DialogOrVaulProps extends BaseProps {
-  className?: string;
-  asChild?: true;
-}
-
-const desktop = '(min-width: 768px)';
+type DialogOrVaulProps = BaseProps & CommonProps;
 
 const useResponsiveComponent = (
   desktopComponent: React.ElementType,
   mobileComponent: React.ElementType
 ) => {
-  const isDesktop = useMediaQuery(desktop);
+  const isDesktop = useMediaQuery('(min-width: 768px)');
   return isDesktop ? desktopComponent : mobileComponent;
 };
 
@@ -66,17 +69,14 @@ const DialogOrVaulTrigger = ({
   );
 };
 
-const DialogOrVaulClose = ({
-  className,
-  children,
-  ...props
-}: DialogOrVaulProps) => {
-  const Component = useResponsiveComponent(DialogClose, DrawerClose);
-  return (
-    <Component className={className} {...props}>
-      {children}
-    </Component>
-  );
+const DialogOrVaulPortal = ({ children, ...props }: DialogOrVaulProps) => {
+  const Component = useResponsiveComponent(DialogPortal, DrawerPortal);
+  return <Component {...props}>{children}</Component>;
+};
+
+const DialogOrVaulOverlay = ({ className, ...props }: CommonProps) => {
+  const Component = useResponsiveComponent(DialogOverlay, DrawerOverlay);
+  return <Component className={className} {...props} />;
 };
 
 const DialogOrVaulContent = ({
@@ -85,22 +85,6 @@ const DialogOrVaulContent = ({
   ...props
 }: DialogOrVaulProps) => {
   const Component = useResponsiveComponent(DialogContent, DrawerContent);
-  return (
-    <Component className={className} {...props}>
-      {children}
-    </Component>
-  );
-};
-
-const DialogOrVaulDescription = ({
-  className,
-  children,
-  ...props
-}: DialogOrVaulProps) => {
-  const Component = useResponsiveComponent(
-    DialogDescription,
-    DrawerDescription
-  );
   return (
     <Component className={className} {...props}>
       {children}
@@ -134,15 +118,19 @@ const DialogOrVaulTitle = ({
   );
 };
 
-const DialogOrVaulBody = ({
+const DialogOrVaulDescription = ({
   className,
   children,
   ...props
 }: DialogOrVaulProps) => {
+  const Component = useResponsiveComponent(
+    DialogDescription,
+    DrawerDescription
+  );
   return (
-    <div className={cn('px-4 md:px-0', className)} {...props}>
+    <Component className={className} {...props}>
       {children}
-    </div>
+    </Component>
   );
 };
 
@@ -159,14 +147,28 @@ const DialogOrVaulFooter = ({
   );
 };
 
+const DialogOrVaulClose = ({
+  className,
+  children,
+  ...props
+}: DialogOrVaulProps) => {
+  const Component = useResponsiveComponent(DialogClose, DrawerClose);
+  return (
+    <Component className={className} {...props}>
+      {children}
+    </Component>
+  );
+};
+
 export {
   DialogOrVaul,
-  DialogOrVaulTrigger,
   DialogOrVaulClose,
   DialogOrVaulContent,
   DialogOrVaulDescription,
-  DialogOrVaulHeader,
-  DialogOrVaulTitle,
-  DialogOrVaulBody,
   DialogOrVaulFooter,
+  DialogOrVaulHeader,
+  DialogOrVaulOverlay,
+  DialogOrVaulPortal,
+  DialogOrVaulTitle,
+  DialogOrVaulTrigger,
 };

@@ -112,11 +112,7 @@ export default function UpdatePost({
               <FormItem>
                 <FormLabel>Text</FormLabel>
                 <FormControl>
-                  <Textarea
-                    className='resize-none'
-                    {...field}
-                    rows={Math.max(1, postText?.split('\n').length ?? 3)}
-                  />
+                  <Textarea className='resize-none' {...field} rows={8} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
