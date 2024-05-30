@@ -1,13 +1,9 @@
 'use client';
 
-import { usePathname, useRouter } from 'next/navigation';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { usePathname, useRouter } from 'next/navigation';
 
-import Link from 'next/link';
-import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { useLogoutMutation, useMeQuery } from '@/lib/graphql/generated/graphql';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,10 +12,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { useLogoutMutation, useMeQuery } from '@/lib/graphql/generated/graphql';
+import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
+import Link from 'next/link';
 
-import { CircleUser, Loader2 } from 'lucide-react';
-import { CreatePostModal } from './create-post-modal';
+import { CircleUser, CogIcon, Loader2, LogOutIcon } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
+import { CreatePostModal } from './create-post-modal';
+import { UserSettings } from './user-settings';
 
 export const Header = () => {
   const pathname = usePathname();
@@ -90,7 +92,7 @@ export const Header = () => {
             <ThemeToggle />
           </div>
         ) : (
-          <div className='flex flex-1 items-center justify-between space-x-2 md:justify-end'>
+          <div className='flex flex-1 items-center space-x-2 justify-end'>
             <CreatePostModal />
             <UserMenu
               username={data.me.username}
@@ -110,26 +112,39 @@ const UserMenu = ({
   onHandleLogout: () => Promise<void>;
   username: string;
 }) => {
+  const [settingsModal, setSettingsModal] = useState(false);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button variant='outline' size='icon'>
           <CircleUser className='h-5 w-5' />
           <span className='sr-only'>Toggle user menu</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
+      <DropdownMenuContent align='end' className='w-[140px]'>
         <DropdownMenuLabel>{username}</DropdownMenuLabel>
         <DropdownMenuSeparator />
-
-        <DropdownMenuItem className='gap-2 h-10'>
-          <span className='hidden md:block'>Toggle Theme</span> <ThemeToggle />
+        <DropdownMenuItem
+          className='h-10 flex justify-between cursor-pointer'
+          onSelect={(event) => {
+            event.preventDefault();
+            setSettingsModal(true);
+          }}
+        >
+          <span className='mr-2'>Settings</span>
+          <CogIcon className='h-5 w-5' />
         </DropdownMenuItem>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={onHandleLogout} className='cursor-pointer'>
-          Logout
+        <DropdownMenuItem
+          onClick={onHandleLogout}
+          className='h-10 flex justify-between cursor-pointer'
+        >
+          <span className='mr-2'>Logout</span>
+          <LogOutIcon className='h-5 w-5' />
         </DropdownMenuItem>
       </DropdownMenuContent>
+      <UserSettings open={settingsModal} onOpenChange={setSettingsModal} />
     </DropdownMenu>
   );
 };

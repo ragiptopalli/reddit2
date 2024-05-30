@@ -18,12 +18,11 @@ import {
 import UpdatePost from './update-post';
 import {
   DialogOrVaul,
+  DialogOrVaulClose,
   DialogOrVaulContent,
   DialogOrVaulDescription,
   DialogOrVaulFooter,
   DialogOrVaulHeader,
-  DialogOrVaulOverlay,
-  DialogOrVaulPortal,
   DialogOrVaulTitle,
 } from '@/components/ui/dialog-or-vaul';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
@@ -58,6 +57,7 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
       variables: {
         id: postId,
       },
+      // TODO: update the cache after the post is deleted
     });
   };
 
@@ -91,58 +91,53 @@ export const DropdownActions = ({ postId, postTitle, postText }: P) => {
         </DropdownMenuItem>
       </DropdownMenuContent>
       <DialogOrVaul open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogOrVaulPortal>
-          <DialogOrVaulOverlay className='fixed inset-0 bg-black/20' />
-          <DialogOrVaulContent className='h-[55%] mt-24 fixed bottom-0 left-0 right-0'>
-            <DialogOrVaulHeader>
-              <DialogOrVaulTitle className='mt-5'>
-                Delete Post
-              </DialogOrVaulTitle>
-              <DialogOrVaulDescription>
-                Are you sure you want to delete this post?
-              </DialogOrVaulDescription>
-            </DialogOrVaulHeader>
-            <div className='my-auto'>
-              <Alert className='mt-2 flex gap-4'>
-                <span>
-                  <TriangleAlertIcon className='h-8 w-8' />
-                </span>
-                <div>
-                  <AlertTitle>Careful!</AlertTitle>
-                  <AlertDescription>
-                    This action is irreversible!.
-                  </AlertDescription>
-                </div>
-              </Alert>
-            </div>
-            <DialogOrVaulFooter>
-              <Button
-                onClick={handleDeletePost}
-                disabled={deleteLoading}
-                type='submit'
-              >
-                {deleteLoading && (
-                  <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                )}
-                Delete
-              </Button>
-            </DialogOrVaulFooter>
-          </DialogOrVaulContent>
-        </DialogOrVaulPortal>
+        <DialogOrVaulContent className='space-y-6'>
+          <DialogOrVaulHeader>
+            <DialogOrVaulTitle className='mt-5'>Delete Post</DialogOrVaulTitle>
+            <DialogOrVaulDescription>
+              Are you sure you want to delete this post?
+            </DialogOrVaulDescription>
+          </DialogOrVaulHeader>
+          <div>
+            <Alert className='mt-2 flex gap-4'>
+              <span>
+                <TriangleAlertIcon className='text-destructive h-8 w-8' />
+              </span>
+              <div className='text-destructive'>
+                <AlertTitle>Careful!</AlertTitle>
+                <AlertDescription>
+                  This action is irreversible!.
+                </AlertDescription>
+              </div>
+            </Alert>
+          </div>
+          <DialogOrVaulFooter>
+            <DialogOrVaulClose asChild>
+              <Button variant='outline'>Close</Button>
+            </DialogOrVaulClose>
+            <Button
+              onClick={handleDeletePost}
+              disabled={deleteLoading}
+              type='submit'
+            >
+              {deleteLoading && (
+                <Loader2 className='mr-2 h-4 w-4 animate-spin' />
+              )}
+              Delete
+            </Button>
+          </DialogOrVaulFooter>
+        </DialogOrVaulContent>
       </DialogOrVaul>
       <DialogOrVaul open={editDialogOpen} onOpenChange={setEditDialogOpen}>
-        <DialogOrVaulPortal>
-          <DialogOrVaulOverlay className='fixed inset-0 ' />
-          <DialogOrVaulContent className='h-[55%] mt-24 fixed bottom-0 left-0 right-0"'>
-            <DialogOrVaulTitle>Edit Post</DialogOrVaulTitle>
-            <UpdatePost
-              onHandleEditDialogOpen={setEditDialogOpen}
-              postId={postId}
-              postTitle={postTitle}
-              postText={postText}
-            />
-          </DialogOrVaulContent>
-        </DialogOrVaulPortal>
+        <DialogOrVaulContent>
+          <DialogOrVaulTitle>Edit Post</DialogOrVaulTitle>
+          <UpdatePost
+            onHandleEditDialogOpen={setEditDialogOpen}
+            postId={postId}
+            postTitle={postTitle}
+            postText={postText}
+          />
+        </DialogOrVaulContent>
       </DialogOrVaul>
     </DropdownMenu>
   );
