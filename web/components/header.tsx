@@ -14,7 +14,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { useLogoutMutation, useMeQuery } from '@/lib/graphql/generated/graphql';
-import { HamburgerMenuIcon, RocketIcon } from '@radix-ui/react-icons';
+import {
+  GitHubLogoIcon,
+  HamburgerMenuIcon,
+  RocketIcon,
+} from '@radix-ui/react-icons';
 import Link from 'next/link';
 
 import { CircleUser, CogIcon, Loader2, LogOutIcon } from 'lucide-react';
@@ -55,18 +59,8 @@ export const Header = () => {
             <RocketIcon className='h-6 w-6' />
             <span className='sr-only'>Reddit</span>
           </Link>
-          <Link
-            href='/about'
-            className={`${
-              pathname === '/about'
-                ? 'text-foreground'
-                : 'text-muted-foreground'
-            } transition-colors hover:text-foreground`}
-          >
-            About
-          </Link>
         </nav>
-        <MobileNav pathname={pathname} />
+        <MobileNav />
         {!data?.me ? (
           <div className='flex flex-1 items-center space-x-4 justify-end'>
             <Link
@@ -93,6 +87,10 @@ export const Header = () => {
           </div>
         ) : (
           <div className='flex flex-1 items-center space-x-2 justify-end'>
+            {/* TODO: remove this */}
+            <a href='https://github.com/ragiptopalli/reddit2' target='_blank'>
+              <GitHubLogoIcon className='h-6 w-6' />
+            </a>
             <CreatePostModal />
             <UserMenu
               username={data.me.username}
@@ -149,7 +147,7 @@ const UserMenu = ({
   );
 };
 
-const MobileNav = ({ pathname }: { pathname: string }) => {
+const MobileNav = () => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -166,16 +164,6 @@ const MobileNav = ({ pathname }: { pathname: string }) => {
           >
             <RocketIcon className='h-6 w-6' />
             <span className='sr-only'>Reddit</span>
-          </Link>
-          <Link
-            href='/about'
-            className={`${
-              pathname === '/about'
-                ? 'text-foreground'
-                : 'text-muted-foreground'
-            }  hover:text-foreground`}
-          >
-            About
           </Link>
         </nav>
       </SheetContent>

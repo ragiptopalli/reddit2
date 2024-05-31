@@ -23,10 +23,14 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
   DotIcon,
+  MessageCircleIcon,
+  ShareIcon,
 } from 'lucide-react';
 import Link from 'next/link';
 
 import { DropdownActions } from './post-dropdown-actions';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import Image from 'next/image';
 
 type PartialPostFragment = Partial<Pick<PostSnippetFragment, 'id'>> &
   Pick<PostSnippetFragment, 'voteStatus' | 'points'>;
@@ -94,25 +98,37 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
   };
 
   return (
-    <section className='w-full'>
+    <section className='col-span-4 md:col-span-2 '>
       <Card>
-        <CardHeader className='p-2'>
-          <CardHeaderContent post={post} />
-        </CardHeader>
-        <Separator className='w-[95%] mx-auto' />
-        <CardContent className='py-4 px-2'>
-          <CardTitle>{post.title}</CardTitle>
-          <CardDescription>{post.text}</CardDescription>
-        </CardContent>
-        <Separator className='w-[95%] mx-auto' />
-        <CardFooter className='p-2'>
-          <VoteButtons
-            points={post.points}
-            voteStatus={post.voteStatus}
-            onHandleVote={handleVote}
-            loading={loading}
+        <CardContent className='p-4'>
+          <CardHeader className='p-0 mb-4'>
+            <CardHeaderContent post={post} />
+          </CardHeader>
+          <Image
+            src='/placeholder.svg'
+            alt='Tweet image'
+            width='1920'
+            height='1080'
+            className='rounded-md w-full'
           />
-        </CardFooter>
+          <Separator className='my-2' />
+          <CardFooter className='p-0 gap-2'>
+            <VoteButtons
+              points={post.points}
+              voteStatus={post.voteStatus}
+              onHandleVote={handleVote}
+              loading={loading}
+            />
+            <Button variant='outline' size='icon'>
+              <MessageCircleIcon className='h-5 w-5' />
+              <span className='sr-only'>Comment</span>
+            </Button>
+            <Button variant='outline' size='icon'>
+              <ShareIcon className='h-5 w-5' />
+              <span className='sr-only'>Share</span>
+            </Button>
+          </CardFooter>
+        </CardContent>
       </Card>
     </section>
   );
@@ -120,27 +136,45 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
 
 const CardHeaderContent = ({ post }: { post: PostsQuery['posts'][0] }) => {
   return (
-    <div className='space-x-2 flex items-center justify-between'>
-      <div className='flex items-center'>
-        <Link href={`/u/${post.postCreator.username}`}>
-          <div className='flex items-center '>
-            <span>{post.postCreator.username}</span>
-            <BadgeCheckIcon className='ml-1.5 h-5 w-5 fill-primary text-background' />
+    <>
+      <div className='flex justify-between pb-4'>
+        <div className='flex gap-2'>
+          <Avatar>
+            <Image
+              width='84'
+              height='84'
+              src='/placeholder.svg'
+              alt={`${post.postCreator.username}'s avatar`}
+            />
+            <AvatarFallback>SC</AvatarFallback>
+          </Avatar>
+          <div className='flex'>
+            <Link href={`/u/${post.postCreator.username}`}>
+              <div className='flex items-center '>
+                <span>{post.postCreator.username}</span>
+                <BadgeCheckIcon className='ml-1.5 h-5 w-5 fill-primary text-background' />
+                <DotIcon className='h-3 w-3 fill-primary' />
+              </div>
+            </Link>
+            <Link href={`/u/${post.postCreator.username}/p/${post.id}`}>
+              <div className='hover:underline'>
+                {getCustomTimeFormat(new Date(post.createdAt))}
+              </div>
+            </Link>
           </div>
-        </Link>
-        <DotIcon className='h-3 w-3 fill-primary' />
-        <Link href={`/u/${post.postCreator.username}/p/${post.id}`}>
-          <div className='hover:underline'>
-            {getCustomTimeFormat(new Date(post.createdAt))}
-          </div>
-        </Link>
+        </div>
+        <DropdownActions
+          postId={post.id}
+          postTitle={post.title}
+          postText={post.text}
+        />
       </div>
-      <DropdownActions
-        postId={post.id}
-        postTitle={post.title}
-        postText={post.text}
-      />
-    </div>
+      <CardTitle>Hello new Post</CardTitle>
+      <CardDescription>
+        Introducing the new Shadcn UI library - a collection of beautifully
+        designed, accessible, and customizable React components.
+      </CardDescription>
+    </>
   );
 };
 
