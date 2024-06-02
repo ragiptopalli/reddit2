@@ -12,3 +12,5 @@ generates:
       skipTypename: true
       useTypeImports: true
       declarationKind: 'interface'
+      scalars:
+        DateTime: Date

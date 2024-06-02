@@ -15,7 +15,7 @@ export interface Scalars {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
-  DateTimeISO: { input: any; output: any; }
+  DateTime: { input: Date; output: Date; }
 }
 
 export interface FieldError {
@@ -25,7 +25,7 @@ export interface FieldError {
 
 export interface Mutation {
   createPost: Post;
-  deletePost: Scalars['Boolean']['output'];
+  deletePost?: Maybe<Scalars['Boolean']['output']>;
   forgetPassowrdLink: Scalars['Boolean']['output'];
   login: User;
   logout: Scalars['Boolean']['output'];
@@ -80,7 +80,7 @@ export interface MutationVoteArgs {
 }
 
 export interface Post {
-  createdAt: Scalars['DateTimeISO']['output'];
+  createdAt: Scalars['DateTime']['output'];
   creatorId: Scalars['String']['output'];
   id: Scalars['String']['output'];
   points: Scalars['Int']['output'];
@@ -88,7 +88,7 @@ export interface Post {
   text?: Maybe<Scalars['String']['output']>;
   textSnippet?: Maybe<Scalars['String']['output']>;
   title: Scalars['String']['output'];
-  updatedAt: Scalars['DateTimeISO']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   voteStatus: VoteStatus;
 }
 
@@ -121,10 +121,10 @@ export interface UpdootInput {
 }
 
 export interface User {
-  createdAt: Scalars['DateTimeISO']['output'];
+  createdAt: Scalars['DateTime']['output'];
   email: Scalars['String']['output'];
   id: Scalars['String']['output'];
-  updatedAt: Scalars['DateTimeISO']['output'];
+  updatedAt: Scalars['DateTime']['output'];
   username: Scalars['String']['output'];
 }
 
@@ -146,7 +146,7 @@ export enum VoteStatus {
   Up = 'UP'
 }
 
-export type PostSnippetFragment = { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } };
+export type PostSnippetFragment = { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: Date, updatedAt: Date, postCreator: { id: string, username: string } };
 
 export type UserFragmentFragment = { id: string, username: string, email: string };
 
@@ -155,14 +155,14 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } };
+export type CreatePostMutation = { createPost: { id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: Date, updatedAt: Date, postCreator: { id: string, username: string } } };
 
 export type DeletePostMutationVariables = Exact<{
   id: Scalars['String']['input'];
 }>;
 
 
-export type DeletePostMutation = { deletePost: boolean };
+export type DeletePostMutation = { deletePost?: boolean | null };
 
 export type UpdatePostMutationVariables = Exact<{
   id: Scalars['String']['input'];
@@ -225,7 +225,7 @@ export type PostQueryVariables = Exact<{
 }>;
 
 
-export type PostQuery = { post?: { text?: string | null, id: string, title: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } } | null };
+export type PostQuery = { post?: { text?: string | null, id: string, title: string, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: Date, updatedAt: Date, postCreator: { id: string, username: string } } | null };
 
 export type PostsQueryVariables = Exact<{
   skip: Scalars['Int']['input'];
@@ -233,7 +233,7 @@ export type PostsQueryVariables = Exact<{
 }>;
 
 
-export type PostsQuery = { posts: Array<{ textSnippet?: string | null, id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: any, updatedAt: any, postCreator: { id: string, username: string } }> };
+export type PostsQuery = { posts: Array<{ textSnippet?: string | null, id: string, title: string, text?: string | null, points: number, creatorId: string, voteStatus: VoteStatus, createdAt: Date, updatedAt: Date, postCreator: { id: string, username: string } }> };
 
 export type PostsCountQueryVariables = Exact<{ [key: string]: never; }>;
 

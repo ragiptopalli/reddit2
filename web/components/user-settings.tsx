@@ -19,7 +19,7 @@ export const UserSettings = ({
 }) => {
   return (
     <DialogOrVaul open={open} onOpenChange={onOpenChange}>
-      <DialogOrVaulContent className='space-y-6 p-1 max-w-3xl h-[95%]'>
+      <DialogOrVaulContent className='space-y-6 p-1 max-w-3xl h-[70%]'>
         <LayoutSettings />
       </DialogOrVaulContent>
     </DialogOrVaul>

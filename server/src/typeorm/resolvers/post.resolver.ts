@@ -149,12 +149,12 @@ export class PostResolver {
     return post.raw[0];
   }
 
-  @Mutation((_returns) => Post, { nullable: true })
+  @Mutation((_returns) => Boolean, { nullable: true })
   @UseMiddleware(isAuth)
   async deletePost(
     @Arg('id') id: string,
     @Ctx() { manager, req }: Context
-  ): Promise<Post | null> {
+  ): Promise<Boolean | null> {
     const post = await manager
       .createQueryBuilder()
       .delete()
@@ -166,7 +166,9 @@ export class PostResolver {
       .returning('*')
       .execute();
 
-    return post.raw[0];
+    if (!post.raw[0]) return false;
+
+    return true;
   }
 
   @FieldResolver((_returns) => User)
