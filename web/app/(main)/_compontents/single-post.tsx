@@ -169,11 +169,8 @@ const CardHeaderContent = ({ post }: { post: PostsQuery['posts'][0] }) => {
           postText={post.text}
         />
       </div>
-      <CardTitle>Hello new Post</CardTitle>
-      <CardDescription>
-        Introducing the new Shadcn UI library - a collection of beautifully
-        designed, accessible, and customizable React components.
-      </CardDescription>
+      <CardTitle>{post.title}</CardTitle>
+      <CardDescription>{post.textSnippet}</CardDescription>
     </>
   );
 };
