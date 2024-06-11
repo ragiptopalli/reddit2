@@ -14,16 +14,15 @@ export default function FeedLayout({
       <Header />
       <main className='w-full'>
         <div className='container px-1 grid grid-cols-4 gap-4 mt-4 max-w-screen-xl'>
-          <div className='hidden md:block h-fit bg-background rounded-xl border'>
+          <div className='hidden md:block h-fit'>
             <LeftSidebar />
           </div>
           {children}
-          <div className='hidden md:block h-fit bg-background rounded-xl border'>
+          <div className='hidden md:block h-fit'>
             <RightSidebar />
           </div>
         </div>
       </main>
-      <Footer />
     </Container>
   );
 }

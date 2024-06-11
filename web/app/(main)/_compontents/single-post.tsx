@@ -119,11 +119,11 @@ const SinglePost = ({ post }: { post: PostsQuery['posts'][0] }) => {
               onHandleVote={handleVote}
               loading={loading}
             />
-            <Button variant='outline' size='icon'>
+            <Button variant='outline' size='icon' disabled>
               <MessageCircleIcon className='h-5 w-5' />
               <span className='sr-only'>Comment</span>
             </Button>
-            <Button variant='outline' size='icon'>
+            <Button variant='outline' size='icon' disabled>
               <ShareIcon className='h-5 w-5' />
               <span className='sr-only'>Share</span>
             </Button>
